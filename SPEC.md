@@ -1,6 +1,6 @@
 # GeoGallery — спецификация (SPEC)
 
-> Статус: **черновик v0.2**, 2026-10-19.
+> Статус: **черновик v0.3**, 2026-11-04.
 > Этот файл отвечает на вопрос **«что строим»**: продукт, данные, поведение, контракты.
 > Вопросы **«как учиться и в каком порядке делать»** — в [`AGENTS.md`](AGENTS.md).
 
@@ -317,18 +317,20 @@ Photo ── sheet ИИ ──► Auth (если нет аккаунта)
 
 ## 11. Архитектура
 
-**Clean + MVVM + UDF.** Правило зависимостей: `Presentation → Domain ← Data`. `Domain` — чистый Kotlin без Android.
+**Clean + MVVM + UDF.** Зависимости слоёв направлены к домену (`:ui → :domain ← :data`).
 
 ```
-:app      presentation (Compose, ViewModel), навигация, сборка DI
+:app      Android application: точка входа (Activity, Application) и сборка DI
+:ui       Android library: Compose, ViewModel, тема и навигация
 :domain   Kotlin/JVM: модели, интерфейсы репозиториев и сервисов, юзкейсы
 :data     Android library: Room, сеть, воркеры WorkManager, реализации интерфейсов
 ```
 
-Код в `:app` импортирует только `:domain`; `:data` подключается ради DI-сборки.
-Компилятор гарантирует только чистоту `:domain` (в нём нет Android-зависимостей). То, что UI в `:app`
-не импортирует классы `:data` (Entity, Dto, DAO), держится на дисциплине и архитектурном ревью:
-зависимость `:app → :data` есть, и такой импорт скомпилируется.
+`:app` подключает `:ui` и `:data` и связывает реализации с доменными контрактами через DI. Если код сборки
+в `:app` использует доменные типы, `:app` объявляет прямую зависимость от `:domain`.
+`:ui` и `:data` зависят от `:domain`. `:ui` получает данные через доменные контракты, а Entity, DTO и DAO
+из `:data` недоступны при компиляции `:ui`. `:domain` компилируется без Android SDK и не зависит от других
+модулей GeoGallery.
 
 **Интерфейсы в `domain`:**
 `PhotoRepository`, `PlaceRepository`, `AuthRepository`, `SettingsRepository`,
@@ -418,3 +420,4 @@ Coroutines + Flow, Room, WorkManager, CameraX, Hilt, kotlinx.serialization. Ос
   вместо Gate и раздела «Без места»; название места по умолчанию из `ordinal` + даты; синхронизация мест
   (`syncStatus`, tombstone, `DELETE /places`); состояние запроса подписи и теги; sheet согласия на ИИ;
   список действий, требующих сети; `Clock`/`IdGenerator`; честная формулировка про границу `:app`/`:data`.*
+- *2026-11-04 — v0.3, зафиксирован отдельный модуль `:ui` для экранов и навигации. Точка входа и сборка DI закреплены за `:app`.*

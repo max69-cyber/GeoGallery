@@ -46,6 +46,25 @@ Room, тесты, Hilt, полировка).
   каждой строки. Я соглашусь или откажусь.
 - Git-операции — только по моей просьбе.
 
+### Сообщения коммитов
+
+- Когда я собираюсь коммитить или спрашиваю, как назвать коммит, напомни формат и предложи готовое сообщение
+  по фактическому изменению и текущей задаче Linear.
+- Заголовок на английском в формате Conventional Commits — `type(scope): short description`.
+  `scope` необязателен. Описание начинай с глагола, например `add`, `fix` или `update`.
+- Выбирай тип по изменению. `feat` — новая возможность, `fix` — исправление бага, `build` — Gradle,
+  модули и зависимости, `docs` — документация, `test` — тесты, `refactor` — перестройка кода с сохранением поведения.
+- Если коммит относится к задаче Linear, после пустой строки добавь `Refs GG-<номер>`.
+  При включённой интеграции с GitHub это привязывает коммит к задаче без закрытия при мерже.
+  Когда весь объём задачи готов, в описании PR можно указать `Closes GG-<номер>` для закрытия при мерже
+  согласно настройкам Linear.
+
+```text
+build: add domain, data, and UI modules
+
+Refs GG-6
+```
+
 ---
 
 ## 👤 Обо мне
@@ -87,7 +106,7 @@ Room, тесты, Hilt, полировка).
 | Область | Решение | Почему |
 |---|---|---|
 | Архитектура | **Clean + MVVM + UDF**: `Presentation → Domain ← Data`, один `UiState` на экран | Цель проекта — отработать слои и инверсию зависимостей |
-| Модули | `:domain` (Kotlin/JVM, без Android), `:data` (Android library), `:app` (presentation + DI) | Android-импорт в `:domain` не скомпилируется; `domain` потом переезжает в KMP. Импорт классов `:data` в UI `:app` скомпилируется (зависимость нужна для DI) — тут держимся на дисциплине и ревью |
+| Модули | `:domain` (Kotlin/JVM), `:data` и `:ui` (Android libraries), `:app` (точка входа и сборка DI). Граф зависимостей — SPEC §11 | `:domain` собирается без Android SDK, а `:ui` не может импортировать классы `:data`. Реализации связываются с контрактами в `:app` |
 | Интерфейсы репозиториев | В **`domain`**, реализации в `data` | Классический Clean (в ReelTusky интерфейс лежал в `data` — осознанное отличие) |
 | Юзкейсы | Только там, где есть логика; простые чтения идут из репозитория напрямую | Не плодить классы-прокси |
 | Модели | Dto / Entity / Domain / Ui — разделяем там, где реально различаются | Не плодить копии «на всякий случай» |
@@ -140,26 +159,27 @@ Room, тесты, Hilt, полировка).
 ```
 GeoGallery/
 ├── SPEC.md
-├── CLAUDE.md
-├── app/                                  ← :app — presentation, навигация, DI-сборка
+├── AGENTS.md
+├── app/                                  ← :app — точка входа и сборка DI
 │   └── src/main/java/com/rayxaus/geogallery/
-│       ├── MainActivity.kt               ← только setContent { GeoGalleryTheme { GeoGalleryApp() } }
-│       ├── GeoGalleryApp.kt              ← корневой composable, NavHost
+│       ├── MainActivity.kt               ← вызывает GeoGalleryApp() из setContent
 │       ├── GeoGalleryApplication.kt      ← @HiltAndroidApp
-│       ├── di/
+│       └── di/
+├── ui/                                   ← :ui — presentation и навигация
+│   └── src/main/java/com/rayxaus/geogallery/ui/
+│       ├── GeoGalleryApp.kt              ← корневой composable с темой и NavHost
 │       ├── navigation/Routes.kt
-│       └── ui/
-│           ├── PreviewData.kt            ← моки только для превью (не использовать в прод-коде)
-│           ├── theme/
-│           ├── components/               ← переиспользуемое
-│           ├── places/                   ← список мест (Этап 2.5), альтернативный вид к карте
-│           ├── map/                      ← MapScreen, MapContent, MapViewModel, MapUiState
-│           ├── camera/
-│           ├── place/
-│           ├── photos/                   ← все фото, включая «Без места»
-│           ├── photo/
-│           ├── auth/
-│           └── settings/
+│       ├── PreviewData.kt                ← моки только для превью
+│       ├── theme/
+│       ├── components/                   ← переиспользуемое
+│       ├── places/                       ← список мест (Этап 2.5), альтернативный вид к карте
+│       ├── map/                          ← MapScreen, MapContent, MapViewModel, MapUiState
+│       ├── camera/
+│       ├── place/
+│       ├── photos/                       ← все фото, включая «Без места»
+│       ├── photo/
+│       ├── auth/
+│       └── settings/
 ├── domain/                               ← :domain — Kotlin/JVM, БЕЗ Android
 │   └── src/main/kotlin/com/rayxaus/geogallery/domain/
 │       ├── model/                        ← Photo, Place, Caption, CaptionSuggestion, GeoPoint, User, …
@@ -177,7 +197,7 @@ GeoGallery/
         └── mapper/
 ```
 
-Сейчас в проекте только `:app` из шаблона Studio; `:domain` и `:data` создаются на Этапе 1.
+Каркас начинается с `:app` из шаблона Studio. Модули `:domain`, `:data` и `:ui` создаются на этапе 1.
 
 ### Конвенция превью
 
@@ -217,13 +237,13 @@ GeoGallery/
 - **Готово, когда:** приложение запускается, репозиторий на GitHub, в истории два аккуратных коммита.
 
 ### Этап 1. Модули и Domain
-**Цель:** ядро на чистом Kotlin, которое не знает про Android, и модульная структура, которая это гарантирует.
+**Цель:** собрать четыре модуля и закрепить границы между доменом, UI и хранением на уровне Gradle.
 - **Изучить:** Gradle multi-module, JVM-модуль (`kotlin("jvm")`), зависимости между модулями
   (`implementation(project(":domain"))`), зачем `domain` отдельным модулем; `@JvmInline value class` для id;
   `java.time.Instant` (доступен на minSdk 26); чистые функции и их тестирование;
   моделирование ошибок в domain (`Result`, sealed-иерархия ошибок, когда исключение уместнее);
   какие зависимости допустимы в `:domain` (`kotlinx-coroutines-core` ради `Flow`, `javax.inject` ради `@Inject constructor`).
-- [ ] Модули `:domain`, `:data`, `:app` (*можно попросить агента настроить Gradle*).
+- [ ] Модули `:domain`, `:data`, `:ui`, `:app` по графу из SPEC §11 (*можно попросить агента настроить Gradle*).
 - [ ] Модели: `Photo`, `Place`, `GeoPoint`, enum'ы (SPEC §6) — только то, что нужно подбору места и первому экрану;
   `Caption`, `CaptionSuggestion` — когда до них дойдёт дело.
 - [ ] Чистая логика подбора места по расстоянию (формула расстояния между координатами) + unit-тесты.
@@ -231,7 +251,8 @@ GeoGallery/
 - [ ] Решить модель ошибок между слоями (см. «Открытые решения»).
 - [ ] Подтвердить выбор DI (Hilt).
 - Интерфейсы репозиториев и сервисов здесь **не** пишем все сразу — они появляются по мере надобности (outside-in).
-- **Готово, когда:** `:domain` собирается без единой Android-зависимости, тесты подбора места проходят на JVM.
+- **Готово, когда:** собираются четыре модуля, у `:domain` нет Android-зависимостей, `:data` недоступен из `:ui`,
+  а тесты подбора места проходят на JVM.
 - 📖 https://developer.android.com/topic/modularization
 - 📖 https://developer.android.com/topic/architecture/domain-layer
 
@@ -261,7 +282,7 @@ GeoGallery/
 - [ ] Тест ViewModel с fake-репозиторием; превью всех состояний `…Content`.
 - [ ] 🔍 Архитектурное ревью с агентом.
 - **Готово, когда:** данные из Room видны на экране, переживают поворот, ViewModel покрыт тестом,
-  Entity и Room-типы не встречаются в `:app`.
+  `:ui` получает доменные модели через контракты из `:domain`.
 - 📖 https://developer.android.com/topic/architecture/ui-layer
 - 📖 https://developer.android.com/topic/architecture/ui-layer/events
 - 📖 https://developer.android.com/training/dependency-injection/hilt-multi-module
@@ -334,7 +355,7 @@ GeoGallery/
 - [ ] Удаление аккаунта; решить нумерацию `ordinal` после переноса (SPEC §14).
 - **Готово, когда:** без аккаунта всё работает как раньше; вход с гостевыми данными переносит их, выход очищает архив;
   токен обновляется сам, сессия переживает перезапуск; переход с fake на реальную реализацию не потребовал правок
-  в `:app/ui`; юзкейсы входа/выхода и ViewModel входа покрыты тестами.
+  в `:ui`; юзкейсы входа/выхода и ViewModel входа покрыты тестами.
 - 📖 https://kotlinlang.org/docs/serialization.html
 - 📖 https://developer.android.com/topic/libraries/architecture/datastore
 
@@ -425,12 +446,12 @@ GeoGallery/
 - `MapView` в Compose: жизненный цикл (`onResume`/`onPause`/`onDestroy`), ключи SDK не коммитить.
 - WorkManager: без уникальных имён работ и идемпотентности получаются дубли; отлаживать удобно через Background Task Inspector.
 - Время: `Instant` в domain, часовой пояс и формат — только в UI.
-- `:domain` легко случайно «испортить» импортом `android.*` — следить за зависимостями модуля.
+- `:domain` собирается без Android SDK. Код, которому нужны Android-типы, размещать в соответствующем Android-модуле.
 - Одноразовые события (навигация, snackbar) в `StateFlow` → повторно срабатывают после поворота экрана
   или теряются; решение — осознанный выбор из «Открытых решений», а не случайность.
 - Room/Retrofit-вызовы на главном потоке или `withContext(Dispatchers.IO)` во ViewModel → поток переключает
   data-слой (main-safety); захардкоженный `Dispatchers.IO` мешает тестам → инжектить диспетчер.
-- Entity/Dto «протекают» в `:app` (удобно же передать `PlaceEntity` прямо в UI) → маппить на границе `:data`.
+- Entity и DTO преобразуются в доменные модели на границе `:data`. В `:ui` доступны контракты и модели `:domain`.
 - Исключения из data-слоя долетают до UI сырыми (`IOException`, `SQLiteException`) → переводить в модель ошибок domain.
 - ViewModel-тесты без `Dispatchers.setMain(...)` падают с «Module with the Main dispatcher is missing».
 - Hilt в многомодульном проекте: `@Module` из `:data` не виден, если `:app` не зависит от `:data`;
