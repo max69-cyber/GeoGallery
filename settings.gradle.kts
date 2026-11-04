@@ -24,4 +24,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "GeoGallery"
 include(":app")
- 
+include(":domain")
+include(":ui")
+include(":data")
