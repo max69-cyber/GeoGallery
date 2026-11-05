@@ -175,11 +175,17 @@ GeoGallery/
 │       ├── auth/
 │       └── settings/
 ├── domain/                               ← :domain — Kotlin/JVM, БЕЗ Android
-│   └── src/main/kotlin/com/rayxaus/geogallery/domain/
-│       ├── model/                        ← Photo, Place, Caption, CaptionSuggestion, GeoPoint, User, …
-│       ├── repository/                   ← PhotoRepository, PlaceRepository, AuthRepository, SettingsRepository
-│       ├── service/                      ← CaptionGenerator, LocationProvider, PhotoSource, SyncScheduler, Clock, IdGenerator
-│       └── usecase/                      ← CapturePhoto, ResolvePlaceForLocation, …
+│   ├── src/main/java/com/rayxaus/geogallery/domain/
+│   │   ├── photo/model/                  ← Photo и типы подписи
+│   │   ├── place/
+│   │   │   ├── model/                    ← Place
+│   │   │   └── service/                  ← PlaceMatcher
+│   │   ├── location/model/               ← GeoPoint
+│   │   └── common/
+│   │       ├── model/                    ← SyncStatus
+│   │       └── service/                  ← Clock, IdGenerator
+│   └── src/test/kotlin/com/rayxaus/geogallery/domain/
+│       └── fake/                         ← FakeClock, FakeIdGenerator
 └── data/                                 ← :data — Android library
     └── src/main/java/com/rayxaus/geogallery/data/
         ├── local/                        ← Room: entities, DAO, database

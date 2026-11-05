@@ -337,6 +337,8 @@ Photo ── sheet ИИ ──► Auth (если нет аккаунта)
 из `:data` недоступны при компиляции `:ui`. `:domain` компилируется без Android SDK и не зависит от других
 модулей GeoGallery.
 
+**Пакеты `:domain`.** Код группируется по предметным областям: `photo/model` содержит `Photo` и типы подписи, `place/model` — `Place`, `place/service` — правило подбора места, `location/model` — `GeoPoint`. Общие типы лежат в `common/model` (`SyncStatus`), общие контракты — в `common/service` (`Clock`, `IdGenerator`). Подпакеты для репозиториев и юзкейсов появляются внутри соответствующей области по мере необходимости.
+
 **Интерфейсы в `domain`:**
 `PhotoRepository`, `PlaceRepository`, `AuthRepository`, `SettingsRepository`,
 `CaptionGenerator`, `LocationProvider`, `PhotoSource` (камера сейчас, галерея в v2),
