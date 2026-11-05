@@ -1,5 +1,7 @@
-package com.rayxaus.geogallery.domain.model
+package com.rayxaus.geogallery.domain.photo.model
 
+import com.rayxaus.geogallery.domain.location.model.GeoPoint
+import com.rayxaus.geogallery.domain.common.model.SyncStatus
 import java.time.Instant
 
 data class Photo(

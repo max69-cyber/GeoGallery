@@ -1,4 +1,4 @@
-package com.rayxaus.geogallery.domain.service
+package com.rayxaus.geogallery.domain.common.service
 
 import java.time.Instant
 

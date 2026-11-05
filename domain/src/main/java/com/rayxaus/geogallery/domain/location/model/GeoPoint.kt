@@ -1,4 +1,4 @@
-package com.rayxaus.geogallery.domain.model
+package com.rayxaus.geogallery.domain.location.model
 
 /** [latitude] and [longitude] are expressed in decimal degrees (58.3876) */
 data class GeoPoint(

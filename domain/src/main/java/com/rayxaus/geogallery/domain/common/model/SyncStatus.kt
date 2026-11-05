@@ -1,4 +1,4 @@
-package com.rayxaus.geogallery.domain.model
+package com.rayxaus.geogallery.domain.common.model
 
 enum class SyncStatus {
     PENDING,
