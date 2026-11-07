@@ -19,7 +19,7 @@ data class Photo(
 
 data class PhotoCaption(
     val text: String,
-    val source: PhotoCaptionSource
+    val source: PhotoCaptionSource,
 )
 
 enum class PhotoCaptionSource {
