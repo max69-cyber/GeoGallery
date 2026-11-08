@@ -1,5 +1,6 @@
 package com.rayxaus.geogallery.ui.places
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -24,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rayxaus.geogallery.domain.place.model.PlaceSummary
@@ -49,12 +51,21 @@ internal fun PlacesContent(
             items(items = places, key = { summary -> summary.place.id }) { summary ->
                 OutlinedCard(
                     onClick = {},
+                    colors = CardDefaults.outlinedCardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+                    ),
+                    border = BorderStroke(
+                        width = 1.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxSize().padding(14.dp)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(14.dp)
                     ) {
                         Box(
                             modifier = Modifier
@@ -75,11 +86,13 @@ internal fun PlacesContent(
                                 text = "${summary.photoCount} photos",
                                 fontSize = 12.sp,
                                 maxLines = 1,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Icon(
                             painter = painterResource(R.drawable.ic_chevron_right),
                             contentDescription = "To place",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -89,7 +102,7 @@ internal fun PlacesContent(
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 private fun PlacesContentPreview() {
     GeoGalleryTheme {
