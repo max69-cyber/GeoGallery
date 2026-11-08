@@ -11,32 +11,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    background = Black,
+    onBackground = White,
+    surfaceContainerLow = Gray950,
+    onSurface = White,
+    onSurfaceVariant = WarmGray400,
+    outlineVariant = Gray800,
+    primary = White,
+    onPrimary = Black,
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    background = White,
+    onBackground = Black,
+    surfaceContainerLow = WarmGray100,
+    onSurface = Black,
+    onSurfaceVariant = WarmGray600,
+    outlineVariant = WarmGray200,
+    primary = Black,
+    onPrimary = White,
 )
 
 @Composable
 fun GeoGalleryTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
