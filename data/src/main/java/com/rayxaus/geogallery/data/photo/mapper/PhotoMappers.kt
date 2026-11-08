@@ -1,5 +1,6 @@
-package com.rayxaus.geogallery.data.photo.local
+package com.rayxaus.geogallery.data.photo.mapper
 
+import com.rayxaus.geogallery.data.photo.local.PhotoEntity
 import com.rayxaus.geogallery.domain.location.model.GeoPoint
 import com.rayxaus.geogallery.domain.photo.model.Photo
 import com.rayxaus.geogallery.domain.photo.model.PhotoCaption

@@ -1,5 +1,7 @@
-package com.rayxaus.geogallery.data.place.local
+package com.rayxaus.geogallery.data.place.mapper
 
+import com.rayxaus.geogallery.data.place.local.PlaceEntity
+import com.rayxaus.geogallery.data.place.local.PlaceSummaryRow
 import com.rayxaus.geogallery.domain.location.model.GeoPoint
 import com.rayxaus.geogallery.domain.place.model.Place
 import com.rayxaus.geogallery.domain.place.model.PlaceSummary
