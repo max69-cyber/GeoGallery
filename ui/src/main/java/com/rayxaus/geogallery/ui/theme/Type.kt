@@ -35,6 +35,12 @@ val Typography = Typography(
         fontSize = 18.sp,
         lineHeight = 24.sp,
     ),
+    bodyMedium = TextStyle(
+        fontFamily = ibmPlexMono,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 16.sp,
+    ),
     bodySmall = TextStyle(
         fontFamily = ibmPlexMono,
         fontWeight = FontWeight.Normal,
