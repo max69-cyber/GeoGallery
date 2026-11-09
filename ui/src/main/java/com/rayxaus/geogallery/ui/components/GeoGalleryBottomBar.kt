@@ -15,18 +15,19 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.rayxaus.geogallery.ui.R
@@ -147,16 +148,24 @@ private fun GeoGalleryBottomBarButton(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    IconButton(
-        onClick = onClick,
-        colors = IconButtonDefaults.iconButtonColors(
-            containerColor = Color.Transparent,
-            contentColor = if (isActive) MaterialTheme.colorScheme.background
-            else MaterialTheme.colorScheme.onBackground,
-        ),
-        modifier = modifier,
+    val contentColor =
+        if (isActive) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.onBackground
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .selectable(
+                selected = isActive,
+                onClick = onClick,
+                role = Role.Tab,
+                indication = null,
+                interactionSource = null,
+            ),
     ) {
-        content()
+        CompositionLocalProvider(LocalContentColor provides contentColor) {
+            content()
+        }
+
     }
 }
 
