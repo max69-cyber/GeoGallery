@@ -1,16 +1,20 @@
 package com.rayxaus.geogallery.ui.components
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -23,9 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.rayxaus.geogallery.ui.R
 import com.rayxaus.geogallery.ui.navigation.MainTab
+import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
 
 @Composable
 internal fun GeoGalleryBottomBar(
@@ -39,20 +45,12 @@ internal fun GeoGalleryBottomBar(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
             .fillMaxWidth()
-            .padding(
-                PaddingValues(
-                    vertical = 8.dp,
-                    horizontal = 16.dp,
-                )
-            )
+            .padding(vertical = 8.dp, horizontal = 16.dp)
             .navigationBarsPadding()
-            .background(Color.Transparent)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        BoxWithConstraints(
             modifier = Modifier
                 .weight(1f)
-                .height(64.dp)
                 .clip(RoundedCornerShape(32.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainerLow)
                 .border(
@@ -60,43 +58,66 @@ internal fun GeoGalleryBottomBar(
                     color = MaterialTheme.colorScheme.outlineVariant,
                     shape = RoundedCornerShape(32.dp)
                 )
-                .padding(vertical = 4.dp)
+                .padding(vertical = 4.dp, horizontal = 4.dp)
         ) {
-            GeoGalleryBottomBarButton(
-                onClick = { onTabSelected(MainTab.Map) },
-                isActive = activeTab == MainTab.Map,
+            val tabWidth = maxWidth / 3
+            val tabAnimationState = animateDpAsState(
+                targetValue = tabWidth * activeTab.ordinal,
+            )
+
+            Box(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_map),
-                    contentDescription = "Map"
-                )
-            }
-            GeoGalleryBottomBarButton(
-                onClick = { onTabSelected(MainTab.Places) },
-                isActive = activeTab == MainTab.Places,
+                    .height(56.dp)
+                    .width(tabWidth)
+                    .offset(x = tabAnimationState.value)
+                    .background(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        shape = RoundedCornerShape(32.dp)
+                    )
+            ) {}
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
+                    .fillMaxWidth()
+                    .height(56.dp)
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_places),
-                    contentDescription = "Places"
-                )
-            }
-            GeoGalleryBottomBarButton(
-                onClick = { onTabSelected(MainTab.Photos) },
-                isActive = activeTab == MainTab.Photos,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_photos),
-                    contentDescription = "Photos"
-                )
+                GeoGalleryBottomBarButton(
+                    onClick = { onTabSelected(MainTab.Map) },
+                    isActive = activeTab == MainTab.Map,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_map),
+                        contentDescription = "Map"
+                    )
+                }
+                GeoGalleryBottomBarButton(
+                    onClick = { onTabSelected(MainTab.Places) },
+                    isActive = activeTab == MainTab.Places,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_places),
+                        contentDescription = "Places"
+                    )
+                }
+                GeoGalleryBottomBarButton(
+                    onClick = { onTabSelected(MainTab.Photos) },
+                    isActive = activeTab == MainTab.Photos,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_photos),
+                        contentDescription = "Photos"
+                    )
+                }
             }
         }
 
@@ -129,13 +150,24 @@ private fun GeoGalleryBottomBarButton(
     IconButton(
         onClick = onClick,
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = if (isActive) MaterialTheme.colorScheme.onBackground
-            else MaterialTheme.colorScheme.surfaceContainerLow,
+            containerColor = Color.Transparent,
             contentColor = if (isActive) MaterialTheme.colorScheme.background
             else MaterialTheme.colorScheme.onBackground,
         ),
         modifier = modifier,
     ) {
         content()
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun Preview() {
+    GeoGalleryTheme {
+        GeoGalleryBottomBar(
+            activeTab = MainTab.Places,
+            onTabSelected = {},
+            onCameraClick = {},
+        )
     }
 }

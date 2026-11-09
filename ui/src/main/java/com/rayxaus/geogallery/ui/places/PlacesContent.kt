@@ -114,7 +114,7 @@ internal fun PlacesContent(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxWidth()
                             .padding(14.dp)
                     ) {
                         Box(
