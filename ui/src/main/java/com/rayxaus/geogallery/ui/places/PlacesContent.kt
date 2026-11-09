@@ -1,6 +1,5 @@
 package com.rayxaus.geogallery.ui.places
 
-import android.R.attr.maxLines
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,11 +25,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.rayxaus.geogallery.domain.place.model.PlaceSummary
 import com.rayxaus.geogallery.ui.R
 import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
@@ -70,12 +67,18 @@ internal fun PlacesContent(
                             .padding(14.dp)
                     ) {
                         Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier
                                 .size(100.dp)
                                 .clip(RoundedCornerShape(14.dp))
                                 .background(MaterialTheme.colorScheme.surfaceVariant)
-
-                        )
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_no_image),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                contentDescription = "No image"
+                            )
+                        }
                         Column(
                             verticalArrangement = Arrangement.spacedBy(4.dp),
                             modifier = Modifier.weight(1f)

@@ -16,6 +16,7 @@ val dotMatrix = FontFamily(Font(R.font.dot_matrix))
 val geologica = FontFamily(
     Font(
         R.font.geologica,
+        weight = FontWeight.Medium,
         variationSettings = FontVariation.Settings(FontVariation.weight(500)),
     ),
 )
