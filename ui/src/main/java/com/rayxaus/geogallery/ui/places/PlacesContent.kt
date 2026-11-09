@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +24,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
@@ -30,6 +33,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +58,7 @@ internal fun PlacesContent(
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val layoutDirection = LocalLayoutDirection.current
+    val activeTab = remember { mutableIntStateOf(2) }
 
     Scaffold(
         topBar = {
@@ -86,6 +92,7 @@ internal fun PlacesContent(
                     .background(Color.Transparent)
             ) {
                 Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .weight(1f)
                         .height(64.dp)
@@ -96,31 +103,74 @@ internal fun PlacesContent(
                             color = MaterialTheme.colorScheme.outlineVariant,
                             shape = RoundedCornerShape(32.dp)
                         )
+                        .padding(vertical = 4.dp)
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(1f)
-                    ) {}
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(1f)
-                    ) {}
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.weight(1f)
-                    ) {}
+                    IconButton(
+                        onClick = { activeTab.intValue = 1 },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = if (activeTab.intValue == 1) MaterialTheme.colorScheme.onBackground
+                            else MaterialTheme.colorScheme.surfaceContainerLow,
+                            contentColor = if (activeTab.intValue == 1) MaterialTheme.colorScheme.background
+                            else MaterialTheme.colorScheme.onBackground,
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_map),
+                            contentDescription = "Map"
+                        )
+                    }
+                    IconButton(
+                        onClick = { activeTab.intValue = 2 },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = if (activeTab.intValue == 2) MaterialTheme.colorScheme.onBackground
+                                             else MaterialTheme.colorScheme.surfaceContainerLow,
+                            contentColor = if (activeTab.intValue == 2) MaterialTheme.colorScheme.background
+                                           else MaterialTheme.colorScheme.onBackground,
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_places),
+                            contentDescription = "Places"
+                        )
+                    }
+                    IconButton(
+                        onClick = { activeTab.intValue = 3 },
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = if (activeTab.intValue == 3) MaterialTheme.colorScheme.onBackground
+                            else MaterialTheme.colorScheme.surfaceContainerLow,
+                            contentColor = if (activeTab.intValue == 3) MaterialTheme.colorScheme.background
+                            else MaterialTheme.colorScheme.onBackground,
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_photos),
+                            contentDescription = "Photos"
+                        )
+                    }
                 }
                 FilledIconButton(
                     onClick = {},
-                    modifier = Modifier.size(64.dp)
+                    modifier = Modifier
+                        .size(64.dp)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.background,
+                            shape = RoundedCornerShape(32.dp)
+                        )
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_camera),
                         contentDescription = "Take photo",
-                        modifier = Modifier.size(36.dp)
+                        modifier = Modifier.size(28.dp)
                     )
                 }
             }
