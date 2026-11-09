@@ -2,7 +2,6 @@ package com.rayxaus.geogallery.ui.places
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,11 +9,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,10 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
@@ -33,7 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +40,8 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.rayxaus.geogallery.domain.place.model.PlaceSummary
 import com.rayxaus.geogallery.ui.R
+import com.rayxaus.geogallery.ui.components.GeoGalleryBottomBar
+import com.rayxaus.geogallery.ui.navigation.MainTab
 import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
 
 
@@ -58,7 +53,7 @@ internal fun PlacesContent(
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val layoutDirection = LocalLayoutDirection.current
-    val activeTab = remember { mutableIntStateOf(2) }
+    val activeTab = remember { mutableStateOf(MainTab.Places) }
 
     Scaffold(
         topBar = {
@@ -77,103 +72,11 @@ internal fun PlacesContent(
             )
         },
         bottomBar = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        PaddingValues(
-                            vertical = 8.dp,
-                            horizontal = 16.dp,
-                        )
-                    )
-                    .navigationBarsPadding()
-                    .background(Color.Transparent)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(64.dp)
-                        .clip(RoundedCornerShape(32.dp))
-                        .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.outlineVariant,
-                            shape = RoundedCornerShape(32.dp)
-                        )
-                        .padding(vertical = 4.dp)
-                ) {
-                    IconButton(
-                        onClick = { activeTab.intValue = 1 },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = if (activeTab.intValue == 1) MaterialTheme.colorScheme.onBackground
-                            else MaterialTheme.colorScheme.surfaceContainerLow,
-                            contentColor = if (activeTab.intValue == 1) MaterialTheme.colorScheme.background
-                            else MaterialTheme.colorScheme.onBackground,
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_map),
-                            contentDescription = "Map"
-                        )
-                    }
-                    IconButton(
-                        onClick = { activeTab.intValue = 2 },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = if (activeTab.intValue == 2) MaterialTheme.colorScheme.onBackground
-                                             else MaterialTheme.colorScheme.surfaceContainerLow,
-                            contentColor = if (activeTab.intValue == 2) MaterialTheme.colorScheme.background
-                                           else MaterialTheme.colorScheme.onBackground,
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_places),
-                            contentDescription = "Places"
-                        )
-                    }
-                    IconButton(
-                        onClick = { activeTab.intValue = 3 },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = if (activeTab.intValue == 3) MaterialTheme.colorScheme.onBackground
-                            else MaterialTheme.colorScheme.surfaceContainerLow,
-                            contentColor = if (activeTab.intValue == 3) MaterialTheme.colorScheme.background
-                            else MaterialTheme.colorScheme.onBackground,
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_photos),
-                            contentDescription = "Photos"
-                        )
-                    }
-                }
-                FilledIconButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .size(64.dp)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.background,
-                            shape = RoundedCornerShape(32.dp)
-                        )
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_camera),
-                        contentDescription = "Take photo",
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-            }
+            GeoGalleryBottomBar(
+                activeTab = activeTab.value,
+                onTabSelected = { newValue -> activeTab.value = newValue },
+                onCameraClick = {},
+            )
         },
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
