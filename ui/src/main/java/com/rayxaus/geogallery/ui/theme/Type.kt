@@ -29,11 +29,23 @@ val Typography = Typography(
         fontSize = 40.sp,
         lineHeight = 48.sp,
     ),
+    headlineMedium = TextStyle(
+        fontFamily = dotMatrix,
+        fontWeight = FontWeight.Normal,
+        fontSize = 36.sp,
+        lineHeight = 40.sp,
+    ),
     titleMedium = TextStyle(
         fontFamily = geologica,
         fontWeight = FontWeight.Medium,
         fontSize = 18.sp,
         lineHeight = 24.sp,
+    ),
+    titleSmall = TextStyle(
+        fontFamily = geologica,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 18.sp,
     ),
     bodyMedium = TextStyle(
         fontFamily = ibmPlexMono,
