@@ -25,7 +25,7 @@ val ibmPlexMono = FontFamily(Font(R.font.ibm_plex_mono_regular))
 val Typography = Typography(
     headlineLarge = TextStyle(
         fontFamily = dotMatrix,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Medium,
         fontSize = 40.sp,
         lineHeight = 48.sp,
     ),

@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.rayxaus.geogallery.ui.R
+import com.rayxaus.geogallery.ui.components.DotRingLoadingIndicator
 import com.rayxaus.geogallery.ui.components.GeoGalleryBottomBar
 import com.rayxaus.geogallery.ui.navigation.MainTab
 import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
@@ -59,7 +60,7 @@ internal fun PlacesContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Places",
+                        text = "places",
                         style = MaterialTheme.typography.headlineLarge,
                     )
                 },
@@ -90,12 +91,12 @@ internal fun PlacesContent(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
-                            text = "Error",
+                            text = "error",
                             style = MaterialTheme.typography.headlineMedium,
                             color = MaterialTheme.colorScheme.error
                         )
                         Text(
-                            text = "Couldn't load places",
+                            text = "couldn't load places",
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onBackground,
                         )
@@ -103,7 +104,25 @@ internal fun PlacesContent(
                 }
             }
 
-            PlacesUiState.Loading -> {}
+            PlacesUiState.Loading -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        DotRingLoadingIndicator()
+                        Text(
+                            text = "loading..",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                    }
+                }
+            }
+
             is PlacesUiState.Success -> {
                 LazyColumn(
                     contentPadding = PaddingValues(
