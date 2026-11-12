@@ -25,4 +25,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providePlaceDao(database: GeoGalleryDatabase) = database.placeDao()
+
+    @Provides
+    @Singleton
+    fun providePhotoDao(database: GeoGalleryDatabase) = database.photoDao()
 }

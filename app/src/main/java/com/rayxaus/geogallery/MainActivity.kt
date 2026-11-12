@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.rayxaus.geogallery.data.photo.local.PhotoDao
 import com.rayxaus.geogallery.data.place.local.PlaceDao
 import com.rayxaus.geogallery.ui.place.list.PlacesListScreen
 import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
@@ -21,6 +22,9 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var placeDao: PlaceDao
+
+    @Inject
+    lateinit var photoDao: PhotoDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +37,7 @@ class MainActivity : ComponentActivity() {
                     PlacesListScreen()
                     DebugSeedButton(
                         placeDao = placeDao,
+                        photoDao = photoDao,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .statusBarsPadding()

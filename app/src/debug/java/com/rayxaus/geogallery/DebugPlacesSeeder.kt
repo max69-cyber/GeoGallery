@@ -1,12 +1,22 @@
 package com.rayxaus.geogallery
 
+import android.content.Context
+import com.rayxaus.geogallery.data.photo.local.PhotoDao
+import com.rayxaus.geogallery.data.photo.local.PhotoEntity
 import com.rayxaus.geogallery.data.place.local.PlaceDao
 import com.rayxaus.geogallery.data.place.local.PlaceEntity
 import com.rayxaus.geogallery.domain.common.model.SyncStatus
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.time.Instant
 
-internal class DebugPlacesSeeder(val placeDao: PlaceDao) {
-    private val places = listOf(
+internal class DebugPlacesSeeder(
+    val placeDao: PlaceDao,
+    val photoDao: PhotoDao,
+    val context: Context,
+) {
+    private val seedPlacesEntities = listOf(
         PlaceEntity(
             id = "debug-riverside-park",
             centerLatitude = 56.84,
@@ -86,9 +96,67 @@ internal class DebugPlacesSeeder(val placeDao: PlaceDao) {
         ),
     )
 
+    private val seedPhotoEntities = listOf(
+        PhotoEntity(
+            id = "debug-photo-old-railway-bridge",
+            localPath = "photos/old_railway_bridge.jpg",
+            latitude = 56.851,
+            longitude = 60.592,
+            accuracyMeters = null,
+            placeId = "debug-old-railway-bridge",
+            captionText = null,
+            captionSource = null,
+            createdAt = Instant.parse("2026-11-06T10:00:00Z").toEpochMilli(),
+            updatedAt = Instant.parse("2026-11-06T10:00:00Z").toEpochMilli(),
+            deletedAt = null,
+            syncStatus = SyncStatus.PENDING,
+        ),
+        PhotoEntity(
+            id = "debug-photo-riverside-park",
+            localPath = "photos/riverside_park.jpg",
+            latitude = 56.84,
+            longitude = 60.60,
+            accuracyMeters = null,
+            placeId = "debug-riverside-park",
+            captionText = null,
+            captionSource = null,
+            createdAt = Instant.parse("2026-11-08T10:00:00Z").toEpochMilli(),
+            updatedAt = Instant.parse("2026-11-08T10:00:00Z").toEpochMilli(),
+            deletedAt = null,
+            syncStatus = SyncStatus.PENDING,
+        ),
+    )
+
     suspend fun seed() {
-        places.forEach {
+        val photos = mapOf(
+            "old_railway_bridge.jpg" to "photos/old_railway_bridge.jpg",
+            "riverside_park.jpg" to "photos/riverside_park.jpg",
+        )
+
+        photos.forEach { (fileName, relativePath) ->
+            copySeedPhoto(relativePath, fileName)
+        }
+
+
+        seedPlacesEntities.forEach {
             placeDao.insert(it)
+        }
+        seedPhotoEntities.forEach {
+            photoDao.insert(it)
+        }
+    }
+
+    private suspend fun copySeedPhoto(
+        relativePath: String,
+        fileName: String,
+    ) = withContext(Dispatchers.IO) {
+        val imageFile = File(context.filesDir, relativePath)
+        imageFile.parentFile?.mkdirs()
+
+        context.assets.open(fileName).use { input ->
+            imageFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
         }
     }
 }
