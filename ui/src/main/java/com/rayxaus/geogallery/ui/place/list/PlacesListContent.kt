@@ -33,18 +33,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.rayxaus.geogallery.ui.R
 import com.rayxaus.geogallery.ui.components.DotRingLoadingIndicator
 import com.rayxaus.geogallery.ui.components.GeoGalleryBottomBar
 import com.rayxaus.geogallery.ui.navigation.MainTab
 import com.rayxaus.geogallery.ui.place.getPlaceDisplayName
 import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
+import java.io.File
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,6 +62,7 @@ internal fun PlacesListContent(
     val activeTab = remember { mutableStateOf(MainTab.Places) }
 
     val locale = LocalConfiguration.current.locales[0]
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -200,11 +205,21 @@ internal fun PlacesListContent(
                                                 .clip(RoundedCornerShape(14.dp))
                                                 .background(MaterialTheme.colorScheme.surfaceVariant)
                                         ) {
-                                            Icon(
-                                                painter = painterResource(R.drawable.ic_no_image),
-                                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                contentDescription = "No image"
-                                            )
+                                            val coverPath = summary.coverPath
+                                            if (coverPath != null) {
+                                                AsyncImage(
+                                                    model = File(context.filesDir, coverPath),
+                                                    contentScale = ContentScale.Crop,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.matchParentSize(),
+                                                )
+                                            } else {
+                                                Icon(
+                                                    painter = painterResource(R.drawable.ic_no_image),
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    contentDescription = "No image"
+                                                )
+                                            }
                                         }
                                         Column(
                                             verticalArrangement = Arrangement.spacedBy(4.dp),
