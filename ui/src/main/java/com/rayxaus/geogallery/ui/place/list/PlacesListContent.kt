@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,6 +43,7 @@ import com.rayxaus.geogallery.ui.R
 import com.rayxaus.geogallery.ui.components.DotRingLoadingIndicator
 import com.rayxaus.geogallery.ui.components.GeoGalleryBottomBar
 import com.rayxaus.geogallery.ui.navigation.MainTab
+import com.rayxaus.geogallery.ui.place.getPlaceDisplayName
 import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
 
 
@@ -54,6 +56,8 @@ internal fun PlacesListContent(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val layoutDirection = LocalLayoutDirection.current
     val activeTab = remember { mutableStateOf(MainTab.Places) }
+
+    val locale = LocalConfiguration.current.locales[0]
 
     Scaffold(
         topBar = {
@@ -207,7 +211,7 @@ internal fun PlacesListContent(
                                             modifier = Modifier.weight(1f)
                                         ) {
                                             Text(
-                                                text = summary.place.name ?: "New Place",
+                                                text = getPlaceDisplayName(summary.place, locale),
                                                 style = MaterialTheme.typography.titleMedium,
                                                 maxLines = 2,
                                                 overflow = TextOverflow.Ellipsis
