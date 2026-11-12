@@ -1,4 +1,4 @@
-package com.rayxaus.geogallery.ui.places
+package com.rayxaus.geogallery.ui.place.list
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -47,8 +47,8 @@ import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun PlacesContent(
-    uiState: PlacesUiState,
+internal fun PlacesListContent(
+    uiState: PlacesListUiState,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -81,7 +81,7 @@ internal fun PlacesContent(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) { innerPadding ->
         when (uiState) {
-            PlacesUiState.Error -> {
+            PlacesListUiState.Error -> {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
@@ -104,7 +104,7 @@ internal fun PlacesContent(
                 }
             }
 
-            PlacesUiState.Loading -> {
+            PlacesListUiState.Loading -> {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
@@ -123,7 +123,7 @@ internal fun PlacesContent(
                 }
             }
 
-            is PlacesUiState.Success -> {
+            is PlacesListUiState.Success -> {
                 when (uiState.places.size) {
                     0 -> {
                         Box(
@@ -238,40 +238,40 @@ internal fun PlacesContent(
 
 @PreviewLightDark
 @Composable
-private fun PlacesContentSuccessPreview() {
+private fun PlacesListContentSuccessPreview() {
     GeoGalleryTheme {
-        PlacesContent(
-            uiState = PlacesUiState.Success(manyPlacesMock),
+        PlacesListContent(
+            uiState = PlacesListUiState.Success(manyPlacesMock),
         )
     }
 }
 
 @PreviewLightDark
 @Composable
-private fun PlacesContentSuccessEmptyListPreview() {
+private fun PlacesListContentSuccessEmptyListPreview() {
     GeoGalleryTheme {
-        PlacesContent(
-            uiState = PlacesUiState.Success(emptyList()),
+        PlacesListContent(
+            uiState = PlacesListUiState.Success(emptyList()),
         )
     }
 }
 
 @PreviewLightDark
 @Composable
-private fun PlacesContentErrorPreview() {
+private fun PlacesListContentErrorPreview() {
     GeoGalleryTheme {
-        PlacesContent(
-            uiState = PlacesUiState.Error,
+        PlacesListContent(
+            uiState = PlacesListUiState.Error,
         )
     }
 }
 
 @PreviewLightDark
 @Composable
-private fun PlacesContentLoadingPreview() {
+private fun PlacesListContentLoadingPreview() {
     GeoGalleryTheme {
-        PlacesContent(
-            uiState = PlacesUiState.Loading,
+        PlacesListContent(
+            uiState = PlacesListUiState.Loading,
         )
     }
 }

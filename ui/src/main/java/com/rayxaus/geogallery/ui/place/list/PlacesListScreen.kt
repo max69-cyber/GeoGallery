@@ -1,15 +1,15 @@
-package com.rayxaus.geogallery.ui.places
+package com.rayxaus.geogallery.ui.place.list
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
-fun PlacesScreen() {
-    val viewModel: PlacesViewModel = hiltViewModel()
+fun PlacesListScreen() {
+    val viewModel: PlacesListViewModel = hiltViewModel()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    PlacesContent(
+    PlacesListContent(
         uiState = uiState.value,
     )
 }

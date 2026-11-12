@@ -1,4 +1,4 @@
-package com.rayxaus.geogallery.ui.places
+package com.rayxaus.geogallery.ui.place.list
 
 import app.cash.turbine.test
 import com.rayxaus.geogallery.domain.location.model.GeoPoint
@@ -14,7 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.time.Instant
 
-class PlacesViewModelTest {
+class PlacesListViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @get:Rule
     private val mainDispatcherRule = MainDispatcherRule(UnconfinedTestDispatcher())
@@ -47,24 +47,24 @@ class PlacesViewModelTest {
     @Test
     fun `uiState has Loading as initial state`() = runTest {
         val repository = FakePlaceRepository()
-        val viewModel = PlacesViewModel(repository)
+        val viewModel = PlacesListViewModel(repository)
 
-        assertEquals(PlacesUiState.Loading, viewModel.uiState.value)
+        assertEquals(PlacesListUiState.Loading, viewModel.uiState.value)
     }
 
     @Test
     fun `uiState changes to Success and updates places data inside it`() = runTest {
         val repository = FakePlaceRepository()
-        val viewModel = PlacesViewModel(repository)
+        val viewModel = PlacesListViewModel(repository)
 
         viewModel.uiState.test {
             awaitItem()
 
             repository.setPlaces(emptyList())
-            assertEquals(PlacesUiState.Success(places = emptyList()), awaitItem())
+            assertEquals(PlacesListUiState.Success(places = emptyList()), awaitItem())
 
             repository.setPlaces(updatedPlaces)
-            assertEquals(PlacesUiState.Success(updatedPlaces), awaitItem())
+            assertEquals(PlacesListUiState.Success(updatedPlaces), awaitItem())
         }
     }
 
@@ -73,11 +73,11 @@ class PlacesViewModelTest {
         val repository = FakePlaceRepository(
             failure = Exception()
         )
-        val viewModel = PlacesViewModel(repository)
+        val viewModel = PlacesListViewModel(repository)
 
         viewModel.uiState.test {
             awaitItem()
-            assertEquals(PlacesUiState.Error, awaitItem())
+            assertEquals(PlacesListUiState.Error, awaitItem())
         }
     }
 }

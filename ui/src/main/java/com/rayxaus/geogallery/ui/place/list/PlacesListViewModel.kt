@@ -1,4 +1,4 @@
-package com.rayxaus.geogallery.ui.places
+package com.rayxaus.geogallery.ui.place.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,15 +13,15 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-internal class PlacesViewModel @Inject constructor(repository: PlaceRepository) : ViewModel() {
-    val uiState: StateFlow<PlacesUiState> = repository.observePlaceSummaries()
-        .map<List<PlaceSummary>, PlacesUiState> { list ->
-            PlacesUiState.Success(places = list)
+internal class PlacesListViewModel @Inject constructor(repository: PlaceRepository) : ViewModel() {
+    val uiState: StateFlow<PlacesListUiState> = repository.observePlaceSummaries()
+        .map<List<PlaceSummary>, PlacesListUiState> { list ->
+            PlacesListUiState.Success(places = list)
         }
-        .catch { emit(PlacesUiState.Error) }
+        .catch { emit(PlacesListUiState.Error) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = PlacesUiState.Loading
+            initialValue = PlacesListUiState.Loading
         )
 }

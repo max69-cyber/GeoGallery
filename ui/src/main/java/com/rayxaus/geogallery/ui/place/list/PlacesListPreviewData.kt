@@ -1,4 +1,4 @@
-package com.rayxaus.geogallery.ui.places
+package com.rayxaus.geogallery.ui.place.list
 
 import com.rayxaus.geogallery.domain.location.model.GeoPoint
 import com.rayxaus.geogallery.domain.place.model.Place
@@ -13,7 +13,14 @@ internal val manyPlacesMock = listOf(
     previewPlace("unnamed", null, 56.836, 60.588, 0, null),
     previewPlace("square", "Cathedral Square", 56.845, 60.608, 12, "photos/square.jpg"),
     previewPlace("bridge", "Old Railway Bridge", 56.851, 60.592, 4, "photos/bridge.jpg"),
-    previewPlace("hill", "Observation Deck on the North Hill", 56.879, 60.610, 36, "photos/hill.jpg"),
+    previewPlace(
+        "hill",
+        "Observation Deck on the North Hill",
+        56.879,
+        60.610,
+        36,
+        "photos/hill.jpg"
+    ),
     previewPlace("market", "Central Market", 56.833, 60.612, 7, "photos/market.jpg"),
     previewPlace("courtyard", "Museum Courtyard", 56.840, 60.616, 0, null),
     previewPlace("trail", "Birch Grove Trail", 56.815, 60.562, 3, "photos/trail.jpg"),
