@@ -166,10 +166,11 @@ GeoGallery/
 │       ├── PreviewData.kt                ← моки только для превью
 │       ├── theme/
 │       ├── components/                   ← переиспользуемое
-│       ├── places/                       ← список мест (Этап 2.5), альтернативный вид к карте
 │       ├── map/                          ← MapScreen, MapContent, MapViewModel, MapUiState
 │       ├── camera/
 │       ├── place/
+│       │   ├── list/                     ← список мест (Этап 2.5), альтернативный вид к карте
+│       │   └── detail/                   ← экран отдельного места (Этап 5)
 │       ├── photos/                       ← все фото, включая «Без места»
 │       ├── photo/
 │       ├── auth/
