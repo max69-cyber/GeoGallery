@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                         placeDao = placeDao,
                         photoDao = photoDao,
                         modifier = Modifier
-                            .align(Alignment.TopEnd)
+                            .align(Alignment.TopCenter)
                             .statusBarsPadding()
                             .padding(16.dp)
                     )
