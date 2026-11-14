@@ -107,7 +107,7 @@ internal fun PlacesListContent(
                 PlacesListUiState.Error -> {
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.padding(innerPadding).fillMaxSize()
                     ) {
                         Column(
                             verticalArrangement = Arrangement.Center,
@@ -130,7 +130,7 @@ internal fun PlacesListContent(
                 PlacesListUiState.Loading -> {
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.padding(innerPadding).fillMaxSize()
                     ) {
                         Column(
                             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -151,7 +151,7 @@ internal fun PlacesListContent(
                         0 -> {
                             Box(
                                 contentAlignment = Alignment.Center,
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier.padding(innerPadding).fillMaxSize()
                             ) {
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(16.dp),

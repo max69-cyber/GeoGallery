@@ -102,7 +102,7 @@ internal fun NavigationBar(
                 ) {
                     val tabWidth = maxWidth / tabsConfig.size
                     val tabAnimationState = animateDpAsState(
-                        targetValue = tabWidth * activeTab.ordinal,
+                        targetValue = tabWidth * tabsConfig.indexOfFirst { it.tab == activeTab },
                     )
 
                     Box(
