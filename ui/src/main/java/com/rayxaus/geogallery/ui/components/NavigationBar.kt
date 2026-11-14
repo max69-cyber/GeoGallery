@@ -52,7 +52,7 @@ private data class TabItem(
     val label: String,
 )
 
-private val tabsConfig = listOf<TabItem>(
+private val tabsConfig = listOf(
     TabItem(
         tab = MainTab.Map,
         iconRes = R.drawable.ic_map,
@@ -100,7 +100,7 @@ internal fun NavigationBar(
                         )
                         .padding(vertical = 4.dp, horizontal = 4.dp)
                 ) {
-                    val tabWidth = maxWidth / 3
+                    val tabWidth = maxWidth / tabsConfig.size
                     val tabAnimationState = animateDpAsState(
                         targetValue = tabWidth * activeTab.ordinal,
                     )
@@ -163,15 +163,15 @@ internal fun NavigationBar(
                         )
                         .padding(vertical = 4.dp, horizontal = 4.dp)
                 ) {
-                    val tabWidth = maxHeight / 3
+                    val tabHeight = maxHeight / tabsConfig.size
                     val tabAnimationState = animateDpAsState(
-                        targetValue = tabWidth * activeTab.ordinal,
+                        targetValue = tabHeight * tabsConfig.indexOfFirst { it.tab == activeTab }
                     )
 
                     Box(
                         modifier = Modifier
                             .width(56.dp)
-                            .height(tabWidth)
+                            .height(tabHeight)
                             .offset(y = tabAnimationState.value)
                             .background(
                                 color = MaterialTheme.colorScheme.onBackground,
