@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.rayxaus.geogallery.data.photo.local.PhotoDao
 import com.rayxaus.geogallery.data.place.local.PlaceDao
-import com.rayxaus.geogallery.ui.place.list.PlacesListScreen
+import com.rayxaus.geogallery.ui.GeoGalleryApp
 import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
                 Box(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    PlacesListScreen()
+                    GeoGalleryApp()
                     DebugSeedButton(
                         placeDao = placeDao,
                         photoDao = photoDao,

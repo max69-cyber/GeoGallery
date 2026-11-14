@@ -58,6 +58,7 @@ import java.io.File
 @Composable
 internal fun PlacesListContent(
     uiState: PlacesListUiState,
+    onCameraClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -94,7 +95,7 @@ internal fun PlacesListContent(
                     NavigationBar(
                         activeTab = activeTab.value,
                         onTabSelected = { newValue -> activeTab.value = newValue },
-                        onCameraClick = {},
+                        onCameraClick = onCameraClick,
                         orientation = BottomBarOrientation.Horizontal,
                     )
                 }
@@ -107,7 +108,9 @@ internal fun PlacesListContent(
                 PlacesListUiState.Error -> {
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = Modifier.padding(innerPadding).fillMaxSize()
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
                     ) {
                         Column(
                             verticalArrangement = Arrangement.Center,
@@ -130,7 +133,9 @@ internal fun PlacesListContent(
                 PlacesListUiState.Loading -> {
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = Modifier.padding(innerPadding).fillMaxSize()
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
                     ) {
                         Column(
                             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -151,7 +156,9 @@ internal fun PlacesListContent(
                         0 -> {
                             Box(
                                 contentAlignment = Alignment.Center,
-                                modifier = Modifier.padding(innerPadding).fillMaxSize()
+                                modifier = Modifier
+                                    .padding(innerPadding)
+                                    .fillMaxSize()
                             ) {
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -178,7 +185,7 @@ internal fun PlacesListContent(
                                     top = innerPadding.calculateTopPadding(),
                                     start = innerPadding.calculateStartPadding(layoutDirection) + 16.dp,
                                     end = if (isLandscape) 0.dp
-                                         else innerPadding.calculateEndPadding(layoutDirection) + 16.dp,
+                                    else innerPadding.calculateEndPadding(layoutDirection) + 16.dp,
                                     bottom = innerPadding.calculateBottomPadding()
                                 ),
                                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -278,7 +285,7 @@ internal fun PlacesListContent(
             NavigationBar(
                 activeTab = activeTab.value,
                 onTabSelected = { newValue -> activeTab.value = newValue },
-                onCameraClick = {},
+                onCameraClick = onCameraClick,
                 orientation = BottomBarOrientation.Vertical
             )
         }
@@ -292,6 +299,7 @@ private fun PlacesListContentSuccessPreview() {
     GeoGalleryTheme {
         PlacesListContent(
             uiState = PlacesListUiState.Success(manyPlacesMock),
+            onCameraClick = {},
         )
     }
 }
@@ -302,6 +310,7 @@ private fun PlacesListContentSuccessEmptyListPreview() {
     GeoGalleryTheme {
         PlacesListContent(
             uiState = PlacesListUiState.Success(emptyList()),
+            onCameraClick = {},
         )
     }
 }
@@ -312,6 +321,7 @@ private fun PlacesListContentErrorPreview() {
     GeoGalleryTheme {
         PlacesListContent(
             uiState = PlacesListUiState.Error,
+            onCameraClick = {},
         )
     }
 }
@@ -322,6 +332,7 @@ private fun PlacesListContentLoadingPreview() {
     GeoGalleryTheme {
         PlacesListContent(
             uiState = PlacesListUiState.Loading,
+            onCameraClick = {},
         )
     }
 }
