@@ -46,6 +46,30 @@ enum class BottomBarOrientation {
     Vertical,
 }
 
+private data class TabItem(
+    val tab: MainTab,
+    val iconRes: Int,
+    val label: String,
+)
+
+private val tabsConfig = listOf<TabItem>(
+    TabItem(
+        tab = MainTab.Map,
+        iconRes = R.drawable.ic_map,
+        label = "Map",
+    ),
+    TabItem(
+        tab = MainTab.Places,
+        iconRes = R.drawable.ic_places,
+        label = "Places",
+    ),
+    TabItem(
+        tab = MainTab.Photos,
+        iconRes = R.drawable.ic_photos,
+        label = "Photos",
+    ),
+)
+
 @Composable
 internal fun NavigationBar(
     activeTab: MainTab,
@@ -98,61 +122,20 @@ internal fun NavigationBar(
                             .fillMaxWidth()
                             .height(56.dp)
                     ) {
-                        NavigationBarButton(
-                            onClick = { onTabSelected(MainTab.Map) },
-                            isActive = activeTab == MainTab.Map,
-                            modifier = Modifier
+                        NavigationTabs(
+                            tabsConfig = tabsConfig,
+                            onClick = onTabSelected,
+                            activeTab = activeTab,
+                            tabModifier = Modifier
                                 .weight(1f)
-                                .fillMaxHeight(),
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_map),
-                                contentDescription = "Map"
-                            )
-                        }
-                        NavigationBarButton(
-                            onClick = { onTabSelected(MainTab.Places) },
-                            isActive = activeTab == MainTab.Places,
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight(),
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_places),
-                                contentDescription = "Places"
-                            )
-                        }
-                        NavigationBarButton(
-                            onClick = { onTabSelected(MainTab.Photos) },
-                            isActive = activeTab == MainTab.Photos,
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight(),
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_photos),
-                                contentDescription = "Photos"
-                            )
-                        }
+                                .fillMaxHeight()
+                        )
                     }
                 }
 
-                FilledIconButton(
-                    onClick = onCameraClick,
-                    modifier = Modifier
-                        .size(64.dp)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.background,
-                            shape = RoundedCornerShape(32.dp)
-                        )
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_camera),
-                        contentDescription = "Take photo",
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
+                CameraButton(
+                    onClick = onCameraClick
+                )
             }
         }
 
@@ -202,61 +185,19 @@ internal fun NavigationBar(
                             .fillMaxHeight()
                             .width(56.dp)
                     ) {
-                        NavigationBarButton(
-                            onClick = { onTabSelected(MainTab.Map) },
-                            isActive = activeTab == MainTab.Map,
-                            modifier = Modifier
+                        NavigationTabs(
+                            tabsConfig = tabsConfig,
+                            onClick = onTabSelected,
+                            activeTab = activeTab,
+                            tabModifier = Modifier
                                 .weight(1f)
-                                .fillMaxWidth(),
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_map),
-                                contentDescription = "Map"
-                            )
-                        }
-                        NavigationBarButton(
-                            onClick = { onTabSelected(MainTab.Places) },
-                            isActive = activeTab == MainTab.Places,
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_places),
-                                contentDescription = "Places"
-                            )
-                        }
-                        NavigationBarButton(
-                            onClick = { onTabSelected(MainTab.Photos) },
-                            isActive = activeTab == MainTab.Photos,
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_photos),
-                                contentDescription = "Photos"
-                            )
-                        }
+                                .fillMaxWidth()
+                        )
                     }
                 }
-
-                FilledIconButton(
-                    onClick = onCameraClick,
-                    modifier = Modifier
-                        .size(64.dp)
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.background,
-                            shape = RoundedCornerShape(32.dp)
-                        )
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_camera),
-                        contentDescription = "Take photo",
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
+                CameraButton(
+                    onClick = onCameraClick
+                )
             }
         }
     }
@@ -287,6 +228,50 @@ private fun NavigationBarButton(
             content()
         }
 
+    }
+}
+
+@Composable
+private fun NavigationTabs(
+    tabsConfig: List<TabItem>,
+    onClick: (MainTab) -> Unit,
+    activeTab: MainTab,
+    tabModifier: Modifier,
+) {
+    tabsConfig.forEach { config ->
+        NavigationBarButton(
+            onClick = { onClick(config.tab) },
+            isActive = activeTab == config.tab,
+            modifier = tabModifier,
+        ) {
+            Icon(
+                painter = painterResource(config.iconRes),
+                contentDescription = config.label,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CameraButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FilledIconButton(
+        onClick = onClick,
+        modifier = modifier
+            .size(64.dp)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.background,
+                shape = RoundedCornerShape(32.dp)
+            )
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_camera),
+            contentDescription = "Take photo",
+            modifier = Modifier.size(28.dp)
+        )
     }
 }
 
