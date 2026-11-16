@@ -165,7 +165,7 @@ internal fun PlacesListContent(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                 ) {
                                     Icon(
-                                        painter = painterResource(R.drawable.ic_empty_places),
+                                        painter = painterResource(R.drawable.ic_location_splash),
                                         contentDescription = "No places",
                                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(72.dp)
