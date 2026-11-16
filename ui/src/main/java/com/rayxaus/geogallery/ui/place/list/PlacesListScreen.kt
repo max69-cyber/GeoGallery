@@ -5,7 +5,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
-fun PlacesListScreen(
+internal fun PlacesListScreen(
     onCameraClick: () -> Unit,
 ) {
     val viewModel: PlacesListViewModel = hiltViewModel()
