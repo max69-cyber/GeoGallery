@@ -7,7 +7,7 @@ import com.rayxaus.geogallery.domain.place.model.Place
 import com.rayxaus.geogallery.domain.place.model.PlaceSummary
 import java.time.Instant
 
-fun Place.toPlaceEntity() = PlaceEntity(
+internal fun Place.toPlaceEntity() = PlaceEntity(
     id = this.id,
     centerLatitude = this.centerPoint.latitude,
     centerLongitude = this.centerPoint.longitude,
@@ -19,7 +19,7 @@ fun Place.toPlaceEntity() = PlaceEntity(
     syncStatus = this.syncStatus,
 )
 
-fun PlaceEntity.toPlace() = Place(
+internal fun PlaceEntity.toPlace() = Place(
     id = this.id,
     centerPoint = GeoPoint(
         latitude = this.centerLatitude,
@@ -34,7 +34,7 @@ fun PlaceEntity.toPlace() = Place(
     syncStatus = this.syncStatus,
 )
 
-fun PlaceSummaryRow.toPlaceSummary() = PlaceSummary(
+internal fun PlaceSummaryRow.toPlaceSummary() = PlaceSummary(
     place = this.place.toPlace(),
     photoCount = this.photoCount,
     coverPath = this.coverPath,

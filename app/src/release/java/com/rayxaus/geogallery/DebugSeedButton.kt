@@ -6,7 +6,7 @@ import com.rayxaus.geogallery.data.photo.local.PhotoDao
 import androidx.compose.ui.Modifier
 
 @Composable
-fun DebugSeedButton(
+internal fun DebugSeedButton(
     placeDao: PlaceDao,
     photoDao: PhotoDao,
     modifier: Modifier = Modifier,

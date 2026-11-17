@@ -1,6 +1,6 @@
 package com.rayxaus.geogallery.ui.camera
 
-enum class CameraPermissionState {
+internal enum class CameraPermissionState {
     Granted,
     Requestable,
     NeedsRationale,

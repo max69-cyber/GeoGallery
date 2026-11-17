@@ -41,7 +41,7 @@ import com.rayxaus.geogallery.ui.R
 import com.rayxaus.geogallery.ui.navigation.MainTab
 import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
 
-enum class BottomBarOrientation {
+internal enum class BottomBarOrientation {
     Horizontal,
     Vertical,
 }

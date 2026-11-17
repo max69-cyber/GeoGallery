@@ -10,19 +10,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.rayxaus.geogallery.ui.R
 
-val dotMatrix = FontFamily(Font(R.font.dot_matrix))
+private val dotMatrix = FontFamily(Font(R.font.dot_matrix))
 
 @OptIn(ExperimentalTextApi::class)
-val geologica = FontFamily(
+private val geologica = FontFamily(
     Font(
         R.font.geologica,
         weight = FontWeight.Medium,
         variationSettings = FontVariation.Settings(FontVariation.weight(500)),
     ),
 )
-val ibmPlexMono = FontFamily(Font(R.font.ibm_plex_mono_regular))
+private val ibmPlexMono = FontFamily(Font(R.font.ibm_plex_mono_regular))
 
-val Typography = Typography(
+internal val Typography = Typography(
     headlineLarge = TextStyle(
         fontFamily = dotMatrix,
         fontWeight = FontWeight.Medium,

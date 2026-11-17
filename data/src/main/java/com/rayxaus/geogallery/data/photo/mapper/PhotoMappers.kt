@@ -7,7 +7,7 @@ import com.rayxaus.geogallery.domain.photo.model.PhotoCaption
 import java.time.Instant
 
 
-fun Photo.toPhotoEntity() = PhotoEntity(
+internal fun Photo.toPhotoEntity() = PhotoEntity(
     id = this.id,
     localPath = this.localPath,
     latitude = this.location?.latitude,
@@ -22,7 +22,7 @@ fun Photo.toPhotoEntity() = PhotoEntity(
     syncStatus = this.syncStatus,
 )
 
-fun PhotoEntity.toPhoto() = Photo(
+internal fun PhotoEntity.toPhoto() = Photo(
     id = this.id,
     localPath = this.localPath,
     location = if (this.latitude != null && this.longitude != null) {

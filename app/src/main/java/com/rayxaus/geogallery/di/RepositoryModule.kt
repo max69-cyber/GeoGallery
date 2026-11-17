@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface RepositoryModule {
+internal interface RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindPlaceRepository(repository: RoomPlaceRepository): PlaceRepository

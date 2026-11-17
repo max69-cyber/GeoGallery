@@ -12,9 +12,9 @@ import java.io.File
 import java.time.Instant
 
 internal class DebugPlacesSeeder(
-    val placeDao: PlaceDao,
-    val photoDao: PhotoDao,
-    val context: Context,
+    private val placeDao: PlaceDao,
+    private val photoDao: PhotoDao,
+    private val context: Context,
 ) {
     private val seedPlacesEntities = listOf(
         PlaceEntity(

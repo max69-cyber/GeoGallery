@@ -13,7 +13,7 @@ import com.rayxaus.geogallery.data.place.local.PlaceDao
 import kotlinx.coroutines.launch
 
 @Composable
-fun DebugSeedButton(
+internal fun DebugSeedButton(
     placeDao: PlaceDao,
     photoDao: PhotoDao,
     modifier: Modifier = Modifier,
