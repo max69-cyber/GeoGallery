@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -47,6 +48,8 @@ internal fun CameraScreen(
             }
         )
     }
+    var flashState by rememberSaveable { mutableStateOf(FlashState.Off) }
+    var isGridVisible by rememberSaveable { mutableStateOf(true) }
 
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -83,8 +86,12 @@ internal fun CameraScreen(
 
     CameraContent(
         permissionState = cameraPermissionState,
+        flashState = flashState,
+        isGridVisible = isGridVisible,
         onPermissionRequest = { launcher.launch(Manifest.permission.CAMERA) },
         onOpenSettings = { openSettings(activity) },
+        onFlashChange = { flashState = getNextFlashState(flashState) },
+        onGridToggle = { isGridVisible = !isGridVisible },
         onBack = onBack,
         modifier = modifier,
     )
@@ -96,4 +103,11 @@ private fun openSettings(activity: Activity) {
         "package:${activity.packageName}".toUri()
     )
     activity.startActivity(intent)
+}
+
+private fun getNextFlashState(current: FlashState): FlashState {
+    val entries = FlashState.entries
+    val next = (current.ordinal + 1) % entries.size
+
+    return entries[next]
 }
