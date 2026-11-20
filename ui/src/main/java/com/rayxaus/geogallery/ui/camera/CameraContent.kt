@@ -1,5 +1,6 @@
 package com.rayxaus.geogallery.ui.camera
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -174,7 +175,7 @@ internal fun CameraContent(
 
 @Composable
 private fun CameraAccessPrompt(
-    splashRes: Int,
+    @DrawableRes splashRes: Int,
     title: String,
     description: String,
     onButtonClick: () -> Unit,
