@@ -51,7 +51,7 @@ internal val Typography = Typography(
         fontFamily = ibmPlexMono,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        lineHeight = 16.sp,
+        lineHeight = 18.sp,
     ),
     bodySmall = TextStyle(
         fontFamily = ibmPlexMono,

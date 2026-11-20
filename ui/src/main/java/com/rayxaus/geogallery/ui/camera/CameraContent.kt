@@ -1,23 +1,32 @@
 package com.rayxaus.geogallery.ui.camera
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.rayxaus.geogallery.ui.R
@@ -105,10 +114,112 @@ internal fun CameraContent(
                 actionIconContentColor = MaterialTheme.colorScheme.onBackground,
             )
         )
-        // camera preview (4:3)
-        // bottom bar with 2 layers:
-        // 1: current places pill
-        // 2: bar with a target place, a shutter button, and a flip btn for camera
+        when (permissionState) {
+            CameraPermissionState.Granted -> {
+                // camera preview (4:3)
+                // bottom bar with 2 layers:
+                // 1: current places pill
+                // 2: bar with a target place, a shutter button, and a flip btn for camera
+            }
+
+            CameraPermissionState.Requestable -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CameraAccessPrompt(
+                        splashRes = R.drawable.ic_camera_splash,
+                        title = "allow camera access",
+                        description = "app needs camera access to take photos",
+                        onButtonClick = onPermissionRequest,
+                        buttonText = "allow access",
+                    )
+                }
+            }
+
+            CameraPermissionState.NeedsRationale -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CameraAccessPrompt(
+                        splashRes = R.drawable.ic_warn_splash,
+                        title = "camera access denied",
+                        description = "allow camera access to take photos",
+                        onButtonClick = onPermissionRequest,
+                        buttonText = "try again",
+                    )
+                }
+            }
+
+            CameraPermissionState.SettingsRequired -> {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CameraAccessPrompt(
+                        splashRes = R.drawable.ic_lock_splash,
+                        title = "enable camera access",
+                        description = "in app settings, open Permissions and allow Camera access",
+                        onButtonClick = onOpenSettings,
+                        buttonText = "open settings",
+                    )
+                }
+            }
+
+        }
+
+    }
+}
+
+@Composable
+private fun CameraAccessPrompt(
+    splashRes: Int,
+    title: String,
+    description: String,
+    onButtonClick: () -> Unit,
+    buttonText: String,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(horizontal = 20.dp),
+    ) {
+        Icon(
+            painter = painterResource(splashRes),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(96.dp),
+        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center,
+            )
+        }
+        FilledTonalButton(
+            onClick = onButtonClick,
+            colors = ButtonDefaults.filledTonalButtonColors(
+                containerColor = MaterialTheme.colorScheme.onBackground,
+                contentColor = MaterialTheme.colorScheme.background
+            ),
+        ) {
+            Text(
+                text = buttonText,
+                style = MaterialTheme.typography.titleSmall,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
