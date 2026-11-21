@@ -2,11 +2,12 @@ package com.rayxaus.geogallery.ui.camera
 
 import android.content.res.Configuration
 import androidx.annotation.DrawableRes
-import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -33,11 +35,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.rayxaus.geogallery.ui.R
 import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
+import com.rayxaus.geogallery.ui.theme.Red
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -142,6 +145,11 @@ internal fun CameraContent(
                 }
                 // bottom bar with 2 layers:
                 // 1: current places pill
+                CurrentPlacePill(
+                    placeName = "PLACE",
+                    accuracy = 10,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
                 // 2: bar with a target place, a shutter button, and a flip btn for camera
             }
 
@@ -241,6 +249,49 @@ private fun CameraAccessPrompt(
                 textAlign = TextAlign.Center
             )
         }
+    }
+}
+
+@Composable
+private fun CurrentPlacePill(
+    placeName: String,
+    accuracy: Int,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.onBackground,
+                shape = CircleShape
+            )
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .background(Red, CircleShape)
+        )
+        Text(
+            text = placeName,
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f, fill = false)
+        )
+        Text(
+            text = "·",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Text(
+            text = "±$accuracy m",
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.bodyMedium
+        )
     }
 }
 
