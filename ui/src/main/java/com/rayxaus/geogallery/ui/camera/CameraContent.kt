@@ -1,13 +1,17 @@
 package com.rayxaus.geogallery.ui.camera
 
+import android.content.res.Configuration
 import androidx.annotation.DrawableRes
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -24,12 +28,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.rayxaus.geogallery.ui.R
 import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
 
@@ -44,9 +50,11 @@ internal fun CameraContent(
     onFlashChange: () -> Unit,
     onGridToggle: () -> Unit,
     onBack: () -> Unit,
+    cameraPreview: @Composable (modifier: Modifier) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isCameraAvailable = permissionState == CameraPermissionState.Granted
+    val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
     Column(
         modifier = modifier
@@ -118,6 +126,20 @@ internal fun CameraContent(
         when (permissionState) {
             CameraPermissionState.Granted -> {
                 // camera preview (4:3)
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                ) {
+                    Box(
+                        modifier = Modifier.aspectRatio(
+                            ratio = if (isPortrait) (3f / 4f) else (4f / 3f)
+                        ),
+                    ) {
+                        cameraPreview(Modifier.matchParentSize())
+                    }
+                }
                 // bottom bar with 2 layers:
                 // 1: current places pill
                 // 2: bar with a target place, a shutter button, and a flip btn for camera
@@ -167,9 +189,7 @@ internal fun CameraContent(
                     )
                 }
             }
-
         }
-
     }
 }
 
@@ -237,6 +257,7 @@ private fun CameraContentGrantedStatePreview() {
             onFlashChange = {},
             onGridToggle = {},
             onBack = {},
+            cameraPreview = {}
         )
     }
 }
@@ -254,6 +275,7 @@ private fun CameraContentRequestableStatePreview() {
             onFlashChange = {},
             onGridToggle = {},
             onBack = {},
+            cameraPreview = {}
         )
     }
 }
@@ -271,6 +293,7 @@ private fun CameraContentNeedsRationaleStatePreview() {
             onFlashChange = {},
             onGridToggle = {},
             onBack = {},
+            cameraPreview = {}
         )
     }
 }
@@ -288,6 +311,7 @@ private fun CameraContentSettingsRequiredStatePreview() {
             onFlashChange = {},
             onGridToggle = {},
             onBack = {},
+            cameraPreview = {}
         )
     }
 }

@@ -8,7 +8,14 @@ import android.provider.Settings
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.lifecycle.awaitInstance
+import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,11 +23,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
 @Composable
 internal fun CameraScreen(
@@ -93,6 +102,47 @@ internal fun CameraScreen(
         onFlashChange = { flashState = getNextFlashState(flashState) },
         onGridToggle = { isGridVisible = !isGridVisible },
         onBack = onBack,
+        cameraPreview = { modifier ->
+            CameraPreview(modifier)
+        },
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun CameraPreview(modifier: Modifier = Modifier) {
+    val applicationContext = LocalContext.current.applicationContext
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    var provider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
+    val preview = remember { Preview.Builder().build() }
+
+    LaunchedEffect(Unit) {
+        provider = ProcessCameraProvider.awaitInstance(applicationContext)
+    }
+
+    provider?.let { readyProvider ->
+        DisposableEffect(readyProvider, lifecycleOwner, preview) {
+            readyProvider.bindToLifecycle(
+                lifecycleOwner,
+                CameraSelector.DEFAULT_BACK_CAMERA,
+                preview
+            )
+
+            onDispose { readyProvider.unbind(preview) }
+        }
+    }
+
+
+    AndroidView(
+        factory = { context ->
+            val previewView = PreviewView(context)
+            
+            previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+            preview.surfaceProvider = previewView.surfaceProvider
+
+            return@AndroidView previewView
+        },
         modifier = modifier,
     )
 }
