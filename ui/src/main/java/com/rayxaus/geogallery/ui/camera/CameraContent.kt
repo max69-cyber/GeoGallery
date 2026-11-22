@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -30,14 +32,18 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.rayxaus.geogallery.domain.place.model.PlaceSummary
 import com.rayxaus.geogallery.ui.R
 import com.rayxaus.geogallery.ui.theme.GeoGalleryTheme
 import com.rayxaus.geogallery.ui.theme.Red
@@ -143,14 +149,27 @@ internal fun CameraContent(
                         cameraPreview(Modifier.matchParentSize())
                     }
                 }
-                // bottom bar with 2 layers:
-                // 1: current places pill
-                CurrentPlacePill(
-                    placeName = "PLACE",
-                    accuracy = 10,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-                // 2: bar with a target place, a shutter button, and a flip btn for camera
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 20.dp, bottom = 48.dp)
+                ) {
+                    // bottom bar with 2 layers:
+                    // 1: current places pill
+                    CurrentPlacePill(
+                        placeName = "PLACE",
+                        accuracy = 10,
+                        )
+                    // 2: bar with a target place, a shutter button, and a flip btn for camera
+                    CameraBottomBar(
+                        targetPlaceSummary = null,
+                        onTargetPlaceClick = {},
+                        onShutterClick = {},
+                        onFlipClick = {},
+                    )
+                }
             }
 
             CameraPermissionState.Requestable -> {
@@ -292,6 +311,104 @@ private fun CurrentPlacePill(
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.bodyMedium
         )
+    }
+}
+
+@Composable
+private fun CameraBottomBar(
+    targetPlaceSummary: PlaceSummary?,
+    onTargetPlaceClick: () -> Unit,
+    onShutterClick: () -> Unit,
+    onFlipClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .padding(horizontal = 24.dp)
+            .fillMaxWidth()
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.weight(1f)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(54.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .clickable(
+                        onClick = onTargetPlaceClick,
+                        role = Role.Button,
+                        enabled = targetPlaceSummary != null,
+                    )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_new_location),
+                    contentDescription = "Target place",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.weight(1f)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+                    .border(
+                        width = 2.dp,
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    .semantics {
+                        contentDescription = "Take photo"
+                    }
+                    .clickable(
+                        onClick = onShutterClick,
+                        role = Role.Button,
+                    )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.onBackground)
+                )
+            }
+        }
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.weight(1f)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(54.dp)
+                    .clip(CircleShape)
+                    .border(
+                        width = 2.dp,
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    .clickable(
+                        onClick = onFlipClick,
+                        role = Role.Button,
+                    )
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_flip_camera),
+                    contentDescription = "Flip camera",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+        }
     }
 }
 
