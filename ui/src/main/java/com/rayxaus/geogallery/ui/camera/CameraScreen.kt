@@ -60,6 +60,8 @@ internal fun CameraScreen(
     var flashState by rememberSaveable { mutableStateOf(FlashState.Off) }
     var isGridVisible by rememberSaveable { mutableStateOf(true) }
 
+    var isFrontCameraEnabled by rememberSaveable { mutableStateOf(false) }
+
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { isGranted ->
@@ -102,30 +104,41 @@ internal fun CameraScreen(
         onFlashChange = { flashState = getNextFlashState(flashState) },
         onGridToggle = { isGridVisible = !isGridVisible },
         onBack = onBack,
+        onCameraFlip = { isFrontCameraEnabled = !isFrontCameraEnabled },
         cameraPreview = { modifier ->
-            CameraPreview(modifier)
+            CameraPreview(
+                isFrontCameraEnabled = isFrontCameraEnabled,
+                modifier = modifier,
+            )
         },
         modifier = modifier,
     )
 }
 
 @Composable
-private fun CameraPreview(modifier: Modifier = Modifier) {
+private fun CameraPreview(
+    isFrontCameraEnabled: Boolean,
+    modifier: Modifier = Modifier,
+) {
     val applicationContext = LocalContext.current.applicationContext
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var provider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
     val preview = remember { Preview.Builder().build() }
 
+    val cameraSelector =
+        if (isFrontCameraEnabled) CameraSelector.DEFAULT_FRONT_CAMERA
+        else CameraSelector.DEFAULT_BACK_CAMERA
+
     LaunchedEffect(Unit) {
         provider = ProcessCameraProvider.awaitInstance(applicationContext)
     }
 
     provider?.let { readyProvider ->
-        DisposableEffect(readyProvider, lifecycleOwner, preview) {
+        DisposableEffect(readyProvider, lifecycleOwner, preview, cameraSelector) {
             readyProvider.bindToLifecycle(
                 lifecycleOwner,
-                CameraSelector.DEFAULT_BACK_CAMERA,
+                cameraSelector,
                 preview
             )
 
@@ -137,7 +150,7 @@ private fun CameraPreview(modifier: Modifier = Modifier) {
     AndroidView(
         factory = { context ->
             val previewView = PreviewView(context)
-            
+
             previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
             preview.surfaceProvider = previewView.surfaceProvider
 

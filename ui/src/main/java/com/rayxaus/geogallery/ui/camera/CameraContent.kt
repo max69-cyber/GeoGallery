@@ -59,6 +59,7 @@ internal fun CameraContent(
     onFlashChange: () -> Unit,
     onGridToggle: () -> Unit,
     onBack: () -> Unit,
+    onCameraFlip: () -> Unit,
     cameraPreview: @Composable (modifier: Modifier) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -161,13 +162,13 @@ internal fun CameraContent(
                     CurrentPlacePill(
                         placeName = "PLACE",
                         accuracy = 10,
-                        )
+                    )
                     // 2: bar with a target place, a shutter button, and a flip btn for camera
                     CameraBottomBar(
                         targetPlaceSummary = null,
                         onTargetPlaceClick = {},
                         onShutterClick = {},
-                        onFlipClick = {},
+                        onFlipClick = onCameraFlip,
                     )
                 }
             }
@@ -425,6 +426,7 @@ private fun CameraContentGrantedStatePreview() {
             onFlashChange = {},
             onGridToggle = {},
             onBack = {},
+            onCameraFlip = {},
             cameraPreview = {}
         )
     }
@@ -443,6 +445,7 @@ private fun CameraContentRequestableStatePreview() {
             onFlashChange = {},
             onGridToggle = {},
             onBack = {},
+            onCameraFlip = {},
             cameraPreview = {}
         )
     }
@@ -461,6 +464,7 @@ private fun CameraContentNeedsRationaleStatePreview() {
             onFlashChange = {},
             onGridToggle = {},
             onBack = {},
+            onCameraFlip = {},
             cameraPreview = {}
         )
     }
@@ -479,6 +483,7 @@ private fun CameraContentSettingsRequiredStatePreview() {
             onFlashChange = {},
             onGridToggle = {},
             onBack = {},
+            onCameraFlip = {},
             cameraPreview = {}
         )
     }
