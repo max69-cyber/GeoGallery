@@ -14,6 +14,7 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
+import androidx.camera.core.UseCase
 import androidx.camera.core.UseCaseGroup
 import androidx.camera.core.ViewPort
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -119,6 +120,11 @@ internal fun CameraScreen(
                     in 225..314 -> 90f
                     else -> controlsRotation
                 }
+
+                if (orientation == ORIENTATION_UNKNOWN) return
+
+                val rotation = UseCase.snapToSurfaceRotation(orientation)
+                imageCapture.targetRotation = rotation
             }
         }
         orientationEventListener.enable()
