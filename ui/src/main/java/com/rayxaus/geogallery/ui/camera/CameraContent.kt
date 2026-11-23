@@ -1,6 +1,5 @@
 package com.rayxaus.geogallery.ui.camera
 
-import android.content.res.Configuration
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -67,7 +65,6 @@ internal fun CameraContent(
     modifier: Modifier = Modifier,
 ) {
     val isCameraAvailable = permissionState == CameraPermissionState.Granted
-    val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
 
     Column(
         modifier = modifier
@@ -150,7 +147,7 @@ internal fun CameraContent(
                 ) {
                     Box(
                         modifier = Modifier.aspectRatio(
-                            ratio = if (isPortrait) (3f / 4f) else (4f / 3f)
+                            ratio = 3f / 4f
                         ),
                     ) {
                         cameraPreview(Modifier.matchParentSize())
