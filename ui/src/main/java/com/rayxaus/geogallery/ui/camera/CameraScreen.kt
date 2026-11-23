@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.provider.Settings
 import android.util.Log
+import android.view.OrientationEventListener
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -67,6 +69,7 @@ internal fun CameraScreen(
     }
 
     val imageCapture = remember { ImageCapture.Builder().build() }
+    var controlsRotation by remember { mutableFloatStateOf(0f) }
 
     var flashState by rememberSaveable { mutableStateOf(FlashState.Off) }
     var isGridVisible by rememberSaveable { mutableStateOf(true) }
@@ -106,6 +109,23 @@ internal fun CameraScreen(
         }
     }
 
+    DisposableEffect(context) {
+        val orientationEventListener = object : OrientationEventListener(context) {
+            override fun onOrientationChanged(orientation: Int) {
+                controlsRotation = when (orientation) {
+                    in 315..359, in 0..44 -> 0f
+                    in 45..134 -> 270f
+                    in 135..224 -> 180f
+                    in 225..314 -> 90f
+                    else -> controlsRotation
+                }
+            }
+        }
+        orientationEventListener.enable()
+
+        onDispose { orientationEventListener.disable() }
+    }
+
     CameraContent(
         permissionState = cameraPermissionState,
         flashState = flashState,
@@ -141,6 +161,7 @@ internal fun CameraScreen(
                 modifier = modifier,
             )
         },
+        controlsRotation = controlsRotation,
         modifier = modifier,
     )
 }

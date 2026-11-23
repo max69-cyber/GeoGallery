@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -62,6 +63,7 @@ internal fun CameraContent(
     onCameraFlip: () -> Unit,
     onShutterClick: () -> Unit,
     cameraPreview: @Composable (modifier: Modifier) -> Unit,
+    controlsRotation: Float,
     modifier: Modifier = Modifier,
 ) {
     val isCameraAvailable = permissionState == CameraPermissionState.Granted
@@ -82,6 +84,7 @@ internal fun CameraContent(
                     Icon(
                         painter = painterResource(R.drawable.ic_back),
                         contentDescription = "Back",
+                        modifier = Modifier.rotate(controlsRotation),
                     )
                 }
             },
@@ -106,6 +109,7 @@ internal fun CameraContent(
                                 FlashState.Flashlight -> painterResource(R.drawable.ic_flashlight)
                             },
                             contentDescription = "Change flash mode",
+                            modifier = Modifier.rotate(controlsRotation),
                         )
                     }
 
@@ -123,6 +127,7 @@ internal fun CameraContent(
                             else painterResource(R.drawable.ic_grid_3x3_off),
 
                             contentDescription = "Toggle grid",
+                            modifier = Modifier.rotate(controlsRotation),
                         )
                     }
                 }
@@ -170,6 +175,7 @@ internal fun CameraContent(
                         onTargetPlaceClick = {},
                         onShutterClick = onShutterClick,
                         onFlipClick = onCameraFlip,
+                        controlsRotation = controlsRotation,
                     )
                 }
             }
@@ -322,6 +328,7 @@ private fun CameraBottomBar(
     onTargetPlaceClick: () -> Unit,
     onShutterClick: () -> Unit,
     onFlipClick: () -> Unit,
+    controlsRotation: Float,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -349,7 +356,8 @@ private fun CameraBottomBar(
                 Icon(
                     painter = painterResource(R.drawable.ic_new_location),
                     contentDescription = "Target place",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.rotate(controlsRotation)
                 )
             }
         }
@@ -407,7 +415,8 @@ private fun CameraBottomBar(
                 Icon(
                     painter = painterResource(R.drawable.ic_flip_camera),
                     contentDescription = "Flip camera",
-                    tint = MaterialTheme.colorScheme.onBackground
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.rotate(controlsRotation)
                 )
             }
         }
@@ -429,7 +438,8 @@ private fun CameraContentGrantedStatePreview() {
             onBack = {},
             onCameraFlip = {},
             onShutterClick = {},
-            cameraPreview = {}
+            cameraPreview = {},
+            controlsRotation = 0f,
         )
     }
 }
@@ -449,7 +459,8 @@ private fun CameraContentRequestableStatePreview() {
             onBack = {},
             onCameraFlip = {},
             onShutterClick = {},
-            cameraPreview = {}
+            cameraPreview = {},
+            controlsRotation = 0f,
         )
     }
 }
@@ -469,7 +480,8 @@ private fun CameraContentNeedsRationaleStatePreview() {
             onBack = {},
             onCameraFlip = {},
             onShutterClick = {},
-            cameraPreview = {}
+            cameraPreview = {},
+            controlsRotation = 0f,
         )
     }
 }
@@ -489,7 +501,8 @@ private fun CameraContentSettingsRequiredStatePreview() {
             onBack = {},
             onCameraFlip = {},
             onShutterClick = {},
-            cameraPreview = {}
+            cameraPreview = {},
+            controlsRotation = 0f,
         )
     }
 }
