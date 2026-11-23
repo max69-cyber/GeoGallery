@@ -5,11 +5,16 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
+import androidx.camera.core.UseCaseGroup
+import androidx.camera.core.ViewPort
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.lifecycle.awaitInstance
 import androidx.camera.view.PreviewView
@@ -27,9 +32,12 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.view.doOnLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import java.io.File
+import java.util.UUID
 
 @Composable
 internal fun CameraScreen(
@@ -57,6 +65,9 @@ internal fun CameraScreen(
             }
         )
     }
+
+    val imageCapture = remember { ImageCapture.Builder().build() }
+
     var flashState by rememberSaveable { mutableStateOf(FlashState.Off) }
     var isGridVisible by rememberSaveable { mutableStateOf(true) }
 
@@ -105,8 +116,27 @@ internal fun CameraScreen(
         onGridToggle = { isGridVisible = !isGridVisible },
         onBack = onBack,
         onCameraFlip = { isFrontCameraEnabled = !isFrontCameraEnabled },
+        onShutterClick = {
+            val file = File(context.filesDir, "capture-${UUID.randomUUID()}.jpg")
+            val outputOptions = ImageCapture.OutputFileOptions.Builder(file).build()
+
+            imageCapture.takePicture(
+                outputOptions,
+                ContextCompat.getMainExecutor(context),
+                object : ImageCapture.OnImageSavedCallback {
+                    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                        Log.d("Capture", file.absolutePath)
+                    }
+
+                    override fun onError(exception: ImageCaptureException) {
+                        exception.message?.let { Log.e("Capture", it) }
+                    }
+                }
+            )
+        },
         cameraPreview = { modifier ->
             CameraPreview(
+                imageCapture = imageCapture,
                 isFrontCameraEnabled = isFrontCameraEnabled,
                 modifier = modifier,
             )
@@ -117,6 +147,7 @@ internal fun CameraScreen(
 
 @Composable
 private fun CameraPreview(
+    imageCapture: ImageCapture,
     isFrontCameraEnabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -124,6 +155,8 @@ private fun CameraPreview(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     var provider by remember { mutableStateOf<ProcessCameraProvider?>(null) }
+    var viewPort by remember { mutableStateOf<ViewPort?>(null) }
+
     val preview = remember { Preview.Builder().build() }
 
     val cameraSelector =
@@ -134,18 +167,33 @@ private fun CameraPreview(
         provider = ProcessCameraProvider.awaitInstance(applicationContext)
     }
 
-    provider?.let { readyProvider ->
-        DisposableEffect(readyProvider, lifecycleOwner, preview, cameraSelector) {
+    val readyProvider = provider
+    val readyViewPort = viewPort
+
+    if (readyProvider != null && readyViewPort != null) {
+        DisposableEffect(
+            readyProvider,
+            lifecycleOwner,
+            preview,
+            cameraSelector,
+            imageCapture,
+            readyViewPort,
+        ) {
+            val useCases = UseCaseGroup.Builder()
+                .addUseCase(preview)
+                .addUseCase(imageCapture)
+                .setViewPort(readyViewPort)
+                .build()
+
             readyProvider.bindToLifecycle(
                 lifecycleOwner,
                 cameraSelector,
-                preview
+                useCases,
             )
 
-            onDispose { readyProvider.unbind(preview) }
+            onDispose { readyProvider.unbind(preview, imageCapture) }
         }
     }
-
 
     AndroidView(
         factory = { context ->
@@ -153,6 +201,8 @@ private fun CameraPreview(
 
             previewView.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
             preview.surfaceProvider = previewView.surfaceProvider
+
+            previewView.doOnLayout { viewPort = previewView.viewPort }
 
             return@AndroidView previewView
         },

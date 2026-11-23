@@ -60,6 +60,7 @@ internal fun CameraContent(
     onGridToggle: () -> Unit,
     onBack: () -> Unit,
     onCameraFlip: () -> Unit,
+    onShutterClick: () -> Unit,
     cameraPreview: @Composable (modifier: Modifier) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -167,7 +168,7 @@ internal fun CameraContent(
                     CameraBottomBar(
                         targetPlaceSummary = null,
                         onTargetPlaceClick = {},
-                        onShutterClick = {},
+                        onShutterClick = onShutterClick,
                         onFlipClick = onCameraFlip,
                     )
                 }
@@ -427,6 +428,7 @@ private fun CameraContentGrantedStatePreview() {
             onGridToggle = {},
             onBack = {},
             onCameraFlip = {},
+            onShutterClick = {},
             cameraPreview = {}
         )
     }
@@ -446,6 +448,7 @@ private fun CameraContentRequestableStatePreview() {
             onGridToggle = {},
             onBack = {},
             onCameraFlip = {},
+            onShutterClick = {},
             cameraPreview = {}
         )
     }
@@ -465,6 +468,7 @@ private fun CameraContentNeedsRationaleStatePreview() {
             onGridToggle = {},
             onBack = {},
             onCameraFlip = {},
+            onShutterClick = {},
             cameraPreview = {}
         )
     }
@@ -484,6 +488,7 @@ private fun CameraContentSettingsRequiredStatePreview() {
             onGridToggle = {},
             onBack = {},
             onCameraFlip = {},
+            onShutterClick = {},
             cameraPreview = {}
         )
     }
