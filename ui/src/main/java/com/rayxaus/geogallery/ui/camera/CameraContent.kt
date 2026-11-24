@@ -62,6 +62,7 @@ internal fun CameraContent(
     onShutterClick: () -> Unit,
     cameraPreview: @Composable (modifier: Modifier) -> Unit,
     controlsRotation: Float,
+    showShutterOverlay: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val isCameraAvailable = permissionState == CameraPermissionState.Granted
@@ -151,6 +152,14 @@ internal fun CameraContent(
                         ),
                     ) {
                         cameraPreview(Modifier.matchParentSize())
+
+                        if (showShutterOverlay) {
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .background(MaterialTheme.colorScheme.background)
+                            )
+                        }
                     }
                 }
                 Column(
@@ -163,7 +172,7 @@ internal fun CameraContent(
                     // bottom bar with 2 layers:
                     // 1: current places pill
                     CurrentPlacePill(
-                        placeName = "PLACE",
+                        placeName = "NEW PLACE",
                         accuracy = 10,
                     )
                     // 2: bar with a target place, a shutter button, and a flip btn for camera
@@ -437,6 +446,7 @@ private fun CameraContentGrantedStatePreview() {
             onShutterClick = {},
             cameraPreview = {},
             controlsRotation = 0f,
+            showShutterOverlay = false,
         )
     }
 }
@@ -458,6 +468,7 @@ private fun CameraContentRequestableStatePreview() {
             onShutterClick = {},
             cameraPreview = {},
             controlsRotation = 0f,
+            showShutterOverlay = false,
         )
     }
 }
@@ -479,6 +490,7 @@ private fun CameraContentNeedsRationaleStatePreview() {
             onShutterClick = {},
             cameraPreview = {},
             controlsRotation = 0f,
+            showShutterOverlay = false,
         )
     }
 }
@@ -500,6 +512,7 @@ private fun CameraContentSettingsRequiredStatePreview() {
             onShutterClick = {},
             cameraPreview = {},
             controlsRotation = 0f,
+            showShutterOverlay = false,
         )
     }
 }

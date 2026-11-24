@@ -25,6 +25,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,8 +40,10 @@ import androidx.core.view.doOnLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.delay
 import java.io.File
 import java.util.UUID
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 internal fun CameraScreen(
@@ -71,6 +74,8 @@ internal fun CameraScreen(
 
     val imageCapture = remember { ImageCapture.Builder().build() }
     var controlsRotation by remember { mutableFloatStateOf(0f) }
+    var capturePulse by remember { mutableIntStateOf(0) }
+    var showShutterOverlay by remember { mutableStateOf(false) }
 
     var flashState by rememberSaveable { mutableStateOf(FlashState.Off) }
     var isGridVisible by rememberSaveable { mutableStateOf(true) }
@@ -87,6 +92,14 @@ internal fun CameraScreen(
             isGranted -> CameraPermissionState.Granted
             shouldShowRationale -> CameraPermissionState.NeedsRationale
             else -> CameraPermissionState.SettingsRequired
+        }
+    }
+
+    LaunchedEffect(capturePulse) {
+        if (capturePulse != 0) {
+            showShutterOverlay = true
+            delay(100.milliseconds)
+            showShutterOverlay = false
         }
     }
 
@@ -154,6 +167,11 @@ internal fun CameraScreen(
                         Log.d("Capture", file.absolutePath)
                     }
 
+                    override fun onCaptureStarted() {
+                        super.onCaptureStarted()
+                        capturePulse++
+                    }
+
                     override fun onError(exception: ImageCaptureException) {
                         exception.message?.let { Log.e("Capture", it) }
                     }
@@ -169,6 +187,7 @@ internal fun CameraScreen(
         },
         controlsRotation = controlsRotation,
         modifier = modifier,
+        showShutterOverlay = showShutterOverlay,
     )
 }
 
