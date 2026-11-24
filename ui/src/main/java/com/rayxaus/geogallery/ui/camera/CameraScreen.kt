@@ -44,6 +44,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.delay
 import java.io.File
 import java.util.UUID
+import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
@@ -134,20 +135,28 @@ internal fun CameraScreen(
     }
 
     DisposableEffect(context) {
+        var lastOrientation = 0f
+
         val orientationEventListener = object : OrientationEventListener(context) {
             override fun onOrientationChanged(orientation: Int) {
-                controlsRotation = when (orientation) {
-                    in 315..359, in 0..44 -> 0f
-                    in 45..134 -> 270f
-                    in 135..224 -> 180f
-                    in 225..314 -> 90f
-                    else -> controlsRotation
-                }
-
                 if (orientation == ORIENTATION_UNKNOWN) return
 
-                val rotation = UseCase.snapToSurfaceRotation(orientation)
-                imageCapture.targetRotation = rotation
+                val diff = abs(lastOrientation - orientation)
+                val shouldRotate = minOf(diff, 360 - diff) >= 55
+
+                if (shouldRotate) {
+                    lastOrientation = when (orientation) {
+                        in 315..359, in 0..44 -> 0f
+                        in 45..134 -> 90f
+                        in 135..224 -> 180f
+                        in 225..314 -> 270f
+                        else -> lastOrientation
+                    }
+                    controlsRotation = ((360 - lastOrientation) % 360)
+
+                    val rotation = UseCase.snapToSurfaceRotation(orientation)
+                    imageCapture.targetRotation = rotation
+                }
             }
         }
         orientationEventListener.enable()
