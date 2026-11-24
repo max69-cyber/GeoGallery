@@ -1,6 +1,7 @@
 package com.rayxaus.geogallery.ui.camera
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,6 +34,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -152,6 +155,41 @@ internal fun CameraContent(
                         ),
                     ) {
                         cameraPreview(Modifier.matchParentSize())
+
+                        if (isGridVisible) {
+                            Canvas(modifier = Modifier.matchParentSize()) {
+                                val height = size.height
+                                val width = size.width
+
+                                val lineOffsets = listOf(
+                                    Pair(
+                                        Offset(width / 3, 0f),
+                                        Offset(width / 3, height),
+                                    ),
+                                    Pair(
+                                        Offset(width / 3 * 2, 0f),
+                                        Offset(width / 3 * 2, height),
+                                    ),
+                                    Pair(
+                                        Offset(0f, height / 3),
+                                        Offset(width, height / 3),
+                                    ),
+                                    Pair(
+                                        Offset(0f, height / 3 * 2),
+                                        Offset(width, height / 3 * 2),
+                                    )
+                                )
+
+                                lineOffsets.forEach { pair ->
+                                    drawLine(
+                                        start = pair.first,
+                                        end = pair.second,
+                                        color = Color.White.copy(alpha = 0.5f),
+                                        strokeWidth = 1.dp.toPx()
+                                    )
+                                }
+                            }
+                        }
 
                         if (showShutterOverlay) {
                             Box(
