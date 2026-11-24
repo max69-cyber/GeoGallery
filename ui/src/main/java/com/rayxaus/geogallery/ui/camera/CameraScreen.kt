@@ -80,7 +80,7 @@ internal fun CameraScreen(
     var showShutterOverlay by remember { mutableStateOf(false) }
 
     var flashState by rememberSaveable { mutableStateOf(FlashState.Off) }
-    var isGridVisible by rememberSaveable { mutableStateOf(true) }
+    var isGridVisible by rememberSaveable { mutableStateOf(false) }
 
     var isFrontCameraEnabled by rememberSaveable { mutableStateOf(false) }
 
