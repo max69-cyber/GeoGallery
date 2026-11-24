@@ -10,6 +10,7 @@ import android.view.OrientationEventListener
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -103,6 +104,15 @@ internal fun CameraScreen(
         }
     }
 
+    LaunchedEffect(imageCapture, flashState) {
+        imageCapture.flashMode = when (flashState) {
+            FlashState.Off -> ImageCapture.FLASH_MODE_OFF
+            FlashState.Auto -> ImageCapture.FLASH_MODE_AUTO
+            FlashState.On -> ImageCapture.FLASH_MODE_ON
+            FlashState.Flashlight -> ImageCapture.FLASH_MODE_OFF
+        }
+    }
+
     LifecycleEventEffect(event = Lifecycle.Event.ON_RESUME) {
         val isGranted = ContextCompat.checkSelfPermission(
             context,
@@ -182,6 +192,7 @@ internal fun CameraScreen(
             CameraPreview(
                 imageCapture = imageCapture,
                 isFrontCameraEnabled = isFrontCameraEnabled,
+                isTorchRequested = flashState == FlashState.Flashlight,
                 modifier = modifier,
             )
         },
@@ -195,6 +206,7 @@ internal fun CameraScreen(
 private fun CameraPreview(
     imageCapture: ImageCapture,
     isFrontCameraEnabled: Boolean,
+    isTorchRequested: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val applicationContext = LocalContext.current.applicationContext
@@ -204,6 +216,7 @@ private fun CameraPreview(
     var viewPort by remember { mutableStateOf<ViewPort?>(null) }
 
     val preview = remember { Preview.Builder().build() }
+    var camera by remember { mutableStateOf<Camera?>(null) }
 
     val cameraSelector =
         if (isFrontCameraEnabled) CameraSelector.DEFAULT_FRONT_CAMERA
@@ -212,6 +225,14 @@ private fun CameraPreview(
     LaunchedEffect(Unit) {
         provider = ProcessCameraProvider.awaitInstance(applicationContext)
     }
+
+    val activeCamera = camera
+    if (activeCamera?.cameraInfo?.hasFlashUnit() == true) {
+        LaunchedEffect(activeCamera, isTorchRequested) {
+            activeCamera.cameraControl.enableTorch(isTorchRequested)
+        }
+    }
+
 
     val readyProvider = provider
     val readyViewPort = viewPort
@@ -231,7 +252,7 @@ private fun CameraPreview(
                 .setViewPort(readyViewPort)
                 .build()
 
-            readyProvider.bindToLifecycle(
+            camera = readyProvider.bindToLifecycle(
                 lifecycleOwner,
                 cameraSelector,
                 useCases,
