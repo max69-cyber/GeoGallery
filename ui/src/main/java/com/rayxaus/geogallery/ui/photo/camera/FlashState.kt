@@ -1,4 +1,4 @@
-package com.rayxaus.geogallery.ui.camera
+package com.rayxaus.geogallery.ui.photo.camera
 
 internal enum class FlashState {
     Off,

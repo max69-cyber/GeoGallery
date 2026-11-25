@@ -11,9 +11,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.rayxaus.geogallery.ui.camera.CameraScreen
 import com.rayxaus.geogallery.ui.navigation.CameraRoute
 import com.rayxaus.geogallery.ui.navigation.PlacesRoute
+import com.rayxaus.geogallery.ui.photo.camera.CameraScreen
 import com.rayxaus.geogallery.ui.place.list.PlacesListScreen
 
 @SuppressLint("SourceLockedOrientationActivity")

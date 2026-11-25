@@ -1,4 +1,4 @@
-package com.rayxaus.geogallery.ui.camera
+package com.rayxaus.geogallery.ui.photo.camera
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
