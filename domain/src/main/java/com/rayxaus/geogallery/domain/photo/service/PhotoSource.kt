@@ -2,10 +2,10 @@ package com.rayxaus.geogallery.domain.photo.service
 
 interface PhotoSource {
     /**
-     * captures a photo and saves it as JPEG
+     * acquires an image and saves it to the app’s photo storage
      *
-     * @param photoId: assigns to photo before capture, name of a photo must contain this id
-     * @return: the path to the saved photo, relative to the photo storage root
+     * @param photoId assigns to photo before creation
+     * @return the path to the saved photo, relative to the photo storage root
      */
-    suspend fun capture(photoId: String): String
+    suspend fun acquire(photoId: String): String
 }
