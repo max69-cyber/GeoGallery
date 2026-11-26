@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -42,7 +43,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.delay
-import java.io.File
+import kotlinx.coroutines.launch
 import java.util.UUID
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
@@ -54,6 +55,7 @@ internal fun CameraScreen(
 ) {
     val activity = requireNotNull(LocalActivity.current) { "CameraScreen requires an Activity" }
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     val isCameraPermissionGranted = ContextCompat.checkSelfPermission(
         context,
@@ -78,6 +80,16 @@ internal fun CameraScreen(
     var controlsRotation by remember { mutableFloatStateOf(0f) }
     var capturePulse by remember { mutableIntStateOf(0) }
     var showShutterOverlay by remember { mutableStateOf(false) }
+    val photoSource = remember {
+        CameraXPhotoSource(
+            imageCapture = imageCapture,
+            parentDirectory = context.filesDir,
+            executor = ContextCompat.getMainExecutor(context),
+            onCapture = {
+                capturePulse++
+            }
+        )
+    }
 
     var flashState by rememberSaveable { mutableStateOf(FlashState.Off) }
     var isGridVisible by rememberSaveable { mutableStateOf(false) }
@@ -175,27 +187,13 @@ internal fun CameraScreen(
         onBack = onBack,
         onCameraFlip = { isFrontCameraEnabled = !isFrontCameraEnabled },
         onShutterClick = {
-            val file = File(context.filesDir, "capture-${UUID.randomUUID()}.jpg")
-            val outputOptions = ImageCapture.OutputFileOptions.Builder(file).build()
-
-            imageCapture.takePicture(
-                outputOptions,
-                ContextCompat.getMainExecutor(context),
-                object : ImageCapture.OnImageSavedCallback {
-                    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                        Log.d("Capture", file.absolutePath)
-                    }
-
-                    override fun onCaptureStarted() {
-                        super.onCaptureStarted()
-                        capturePulse++
-                    }
-
-                    override fun onError(exception: ImageCaptureException) {
-                        exception.message?.let { Log.e("Capture", it) }
-                    }
+            coroutineScope.launch {
+                try {
+                    photoSource.acquire(UUID.randomUUID().toString())
+                } catch (e: ImageCaptureException) {
+                    Log.e("Capture", "Photo capture failed", e)
                 }
-            )
+            }
         },
         cameraPreview = { modifier ->
             CameraPreview(
