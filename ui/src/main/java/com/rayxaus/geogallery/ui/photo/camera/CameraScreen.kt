@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.provider.Settings
-import android.util.Log
 import android.view.OrientationEventListener
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -13,7 +12,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.core.UseCase
 import androidx.camera.core.UseCaseGroup
@@ -190,11 +188,7 @@ internal fun CameraScreen(
         onCameraFlip = { isFrontCameraEnabled = !isFrontCameraEnabled },
         onShutterClick = {
             coroutineScope.launch {
-                try {
-                    viewModel.onShutterClick(photoSource)
-                } catch (e: ImageCaptureException) {
-                    Log.e("Capture", "Photo capture failed", e)
-                }
+                viewModel.onShutterClick(photoSource)
             }
         },
         cameraPreview = { modifier ->
