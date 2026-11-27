@@ -39,12 +39,12 @@ import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.doOnLayout
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.UUID
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -53,6 +53,8 @@ internal fun CameraScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val viewModel = hiltViewModel<CameraViewModel>()
+
     val activity = requireNotNull(LocalActivity.current) { "CameraScreen requires an Activity" }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -189,7 +191,7 @@ internal fun CameraScreen(
         onShutterClick = {
             coroutineScope.launch {
                 try {
-                    photoSource.acquire(UUID.randomUUID().toString())
+                    viewModel.onShutterClick(photoSource)
                 } catch (e: ImageCaptureException) {
                     Log.e("Capture", "Photo capture failed", e)
                 }
