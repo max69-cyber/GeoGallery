@@ -26,12 +26,19 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
@@ -53,6 +60,8 @@ import com.rayxaus.geogallery.ui.theme.Red
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CameraContent(
+    uiState: CameraUiState,
+    onErrorDismiss: () -> Unit,
     permissionState: CameraPermissionState,
     flashState: FlashState,
     isGridVisible: Boolean,
@@ -68,7 +77,20 @@ internal fun CameraContent(
     showShutterOverlay: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
     val isCameraAvailable = permissionState == CameraPermissionState.Granted
+    val isWorking = uiState == CameraUiState.Working
+
+    LaunchedEffect(uiState) {
+        if (uiState == CameraUiState.Error) {
+            snackbarHostState.showSnackbar(
+                message = "couldn't save photo",
+                duration = SnackbarDuration.Short
+            )
+            onErrorDismiss()
+        }
+    }
 
     Column(
         modifier = modifier
@@ -81,6 +103,7 @@ internal fun CameraContent(
             navigationIcon = {
                 IconButton(
                     onClick = onBack,
+                    enabled = !isWorking,
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_back),
@@ -93,6 +116,7 @@ internal fun CameraContent(
                 if (isCameraAvailable) {
                     IconButton(
                         onClick = onFlashChange,
+                        enabled = !isWorking,
                         modifier = Modifier.semantics {
                             stateDescription = when (flashState) {
                                 FlashState.Off -> "Flash: Off"
@@ -198,6 +222,27 @@ internal fun CameraContent(
                                     .background(MaterialTheme.colorScheme.background)
                             )
                         }
+
+                        SnackbarHost(
+                            hostState = snackbarHostState,
+                            modifier = Modifier.align(Alignment.TopCenter),
+                        ) { data ->
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.background,
+                                modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp)
+                            ) {
+                                Text(
+                                    text = data.visuals.message,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(
+                                        vertical = 10.dp,
+                                        horizontal = 16.dp,
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
                 Column(
@@ -220,6 +265,7 @@ internal fun CameraContent(
                         onShutterClick = onShutterClick,
                         onFlipClick = onCameraFlip,
                         controlsRotation = controlsRotation,
+                        isButtonsDisabled = isWorking,
                     )
                 }
             }
@@ -373,6 +419,7 @@ private fun CameraBottomBar(
     onShutterClick: () -> Unit,
     onFlipClick: () -> Unit,
     controlsRotation: Float,
+    isButtonsDisabled: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -390,11 +437,12 @@ private fun CameraBottomBar(
                 modifier = Modifier
                     .size(54.dp)
                     .clip(RoundedCornerShape(14.dp))
+                    .alpha(if (targetPlaceSummary != null && !isButtonsDisabled) 1f else 0.4f)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
                     .clickable(
                         onClick = onTargetPlaceClick,
                         role = Role.Button,
-                        enabled = targetPlaceSummary != null,
+                        enabled = targetPlaceSummary != null && !isButtonsDisabled,
                     )
             ) {
                 Icon(
@@ -415,6 +463,7 @@ private fun CameraBottomBar(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
+                    .alpha(if (!isButtonsDisabled) 1f else 0.4f)
                     .border(
                         width = 2.dp,
                         shape = CircleShape,
@@ -426,6 +475,7 @@ private fun CameraBottomBar(
                     .clickable(
                         onClick = onShutterClick,
                         role = Role.Button,
+                        enabled = !isButtonsDisabled,
                     )
             ) {
                 Box(
@@ -446,6 +496,7 @@ private fun CameraBottomBar(
                 modifier = Modifier
                     .size(54.dp)
                     .clip(CircleShape)
+                    .alpha(if (!isButtonsDisabled) 1f else 0.4f)
                     .border(
                         width = 2.dp,
                         shape = CircleShape,
@@ -454,6 +505,7 @@ private fun CameraBottomBar(
                     .clickable(
                         onClick = onFlipClick,
                         role = Role.Button,
+                        enabled = !isButtonsDisabled,
                     )
             ) {
                 Icon(
@@ -472,6 +524,8 @@ private fun CameraBottomBar(
 private fun CameraContentGrantedStatePreview() {
     GeoGalleryTheme {
         CameraContent(
+            uiState = CameraUiState.Working,
+            onErrorDismiss = {},
             permissionState = CameraPermissionState.Granted,
             flashState = FlashState.On,
             isGridVisible = false,
@@ -494,6 +548,8 @@ private fun CameraContentGrantedStatePreview() {
 private fun CameraContentRequestableStatePreview() {
     GeoGalleryTheme {
         CameraContent(
+            uiState = CameraUiState.Idle,
+            onErrorDismiss = {},
             permissionState = CameraPermissionState.Requestable,
             flashState = FlashState.On,
             isGridVisible = true,
@@ -516,6 +572,8 @@ private fun CameraContentRequestableStatePreview() {
 private fun CameraContentNeedsRationaleStatePreview() {
     GeoGalleryTheme {
         CameraContent(
+            uiState = CameraUiState.Idle,
+            onErrorDismiss = {},
             permissionState = CameraPermissionState.NeedsRationale,
             flashState = FlashState.On,
             isGridVisible = true,
@@ -538,6 +596,8 @@ private fun CameraContentNeedsRationaleStatePreview() {
 private fun CameraContentSettingsRequiredStatePreview() {
     GeoGalleryTheme {
         CameraContent(
+            uiState = CameraUiState.Idle,
+            onErrorDismiss = {},
             permissionState = CameraPermissionState.SettingsRequired,
             flashState = FlashState.On,
             isGridVisible = true,

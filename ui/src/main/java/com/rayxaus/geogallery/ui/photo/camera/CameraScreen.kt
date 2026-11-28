@@ -42,7 +42,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -177,6 +176,8 @@ internal fun CameraScreen(
     }
 
     CameraContent(
+        uiState = viewModel.uiState.value,
+        onErrorDismiss = viewModel::onErrorDismiss,
         permissionState = cameraPermissionState,
         flashState = flashState,
         isGridVisible = isGridVisible,
@@ -186,11 +187,7 @@ internal fun CameraScreen(
         onGridToggle = { isGridVisible = !isGridVisible },
         onBack = onBack,
         onCameraFlip = { isFrontCameraEnabled = !isFrontCameraEnabled },
-        onShutterClick = {
-            coroutineScope.launch {
-                viewModel.onShutterClick(photoSource)
-            }
-        },
+        onShutterClick = { viewModel.onShutterClick(photoSource) },
         cameraPreview = { modifier ->
             CameraPreview(
                 imageCapture = imageCapture,
