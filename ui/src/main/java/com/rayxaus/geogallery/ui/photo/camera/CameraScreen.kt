@@ -27,7 +27,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -54,7 +53,6 @@ internal fun CameraScreen(
 
     val activity = requireNotNull(LocalActivity.current) { "CameraScreen requires an Activity" }
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
 
     val isCameraPermissionGranted = ContextCompat.checkSelfPermission(
         context,
@@ -64,6 +62,14 @@ internal fun CameraScreen(
         activity,
         Manifest.permission.CAMERA,
     )
+    val isLocationPermissionGranted = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+    ) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ) == PackageManager.PERMISSION_GRANTED
 
     var cameraPermissionState by remember {
         mutableStateOf(
@@ -94,6 +100,7 @@ internal fun CameraScreen(
     var isGridVisible by rememberSaveable { mutableStateOf(false) }
 
     var isFrontCameraEnabled by rememberSaveable { mutableStateOf(false) }
+    var isAlreadyAskedForLocationPermission by rememberSaveable { mutableStateOf(false) }
 
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -106,6 +113,13 @@ internal fun CameraScreen(
             shouldShowRationale -> CameraPermissionState.NeedsRationale
             else -> CameraPermissionState.SettingsRequired
         }
+    }
+
+    val locationLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions(),
+    ) {
+        viewModel.onShutterClick(photoSource)
+        isAlreadyAskedForLocationPermission = true
     }
 
     LaunchedEffect(capturePulse) {
@@ -187,7 +201,19 @@ internal fun CameraScreen(
         onGridToggle = { isGridVisible = !isGridVisible },
         onBack = onBack,
         onCameraFlip = { isFrontCameraEnabled = !isFrontCameraEnabled },
-        onShutterClick = { viewModel.onShutterClick(photoSource) },
+        // onShutterClick = { viewModel.onShutterClick(photoSource) },
+        onShutterClick = {
+            if (!isAlreadyAskedForLocationPermission && !isLocationPermissionGranted) {
+                locationLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                )
+            } else {
+                viewModel.onShutterClick(photoSource)
+            }
+        },
         cameraPreview = { modifier ->
             CameraPreview(
                 imageCapture = imageCapture,
